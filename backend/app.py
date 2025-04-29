@@ -2,6 +2,7 @@ from dotenv import main
 import os
 import finnhub
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import requests
 import uvicorn
@@ -18,12 +19,21 @@ ALPHA_V_URL = "https://www.alphavantage.co/query"
 
 app = FastAPI()
 
+# Allow CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
 
 
-search_limit = 10
+search_limit = 5
 
 
 class SearchSymbol(BaseModel):

@@ -1,14 +1,19 @@
-import { searchStock } from './utils/fetch'
+import Sidebar from './components/sidebar';
+import Topbar from './components/topbar';
+import { getStockLogo, getPrice } from './utils/fetch'
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 
 function App() {
 
   return (
-    <>
-        <button className='rounded-md p-2' onClick={() => {
-          searchStock("AAPL", (data: any) => {})
-        }}>Click me</button>
-    </>
+    <div className='min-h-screen flex'>
+        <Sidebar></Sidebar>
+
+        <div className='flex flex-col w-full'>
+          <Topbar></Topbar>
+        </div>
+    </div>
   )
 }
 

@@ -1,7 +1,7 @@
 import unittest
 import requests
 
-BACKEND_URL = "http://127.0.0.1:8000"
+BACKEND_URL = "http://0.0.0.0:10000"
 
 class MyTestCase(unittest.TestCase):
     def test_root(self):
@@ -13,6 +13,7 @@ class MyTestCase(unittest.TestCase):
         response = requests.post(BACKEND_URL + "/searchSymbol", json={"query": "AAPL"})
         self.assertEqual(response.status_code, 200)
         self.assertGreater(len(response.json()), 1)
+        print(response.json())
 
     def test_get_stock_logo(self):
         response = requests.post(BACKEND_URL + "/getStockLogo", json={"symbol": "AAPL"})
