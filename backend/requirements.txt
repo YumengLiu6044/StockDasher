@@ -1,1 +1,6 @@
-finnhub
+finnhub-python
+fastapi[standard]
+uvicorn[standard]
+python-dotenv
+pydantic
+requests
