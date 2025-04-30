@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import TrendingStockCard from "./trendingStockCard";
 import { sampleDailyStock, sampleTrendingStocks } from "../assets/sampleData";
 import { createChart, AreaSeries, Time, ColorType } from "lightweight-charts";
-import { SavedCompanyInfo } from "../utils/fetch";
+import { SavedCompanyInfo } from "../utils/types";
 import { LOGO_KEY } from "./trendingStockCard";
 
 interface DashboardProps {
@@ -96,7 +96,7 @@ export default function Dashboard({
 				></div>
 				<div className="cols-span-1 flex flex-col gap-3">
 					<span className="text-xl">Saved Stocks</span>
-					<div className="bg-white border-1 border-gray-300 rounded-2xl p-3 flex flex-col gap-3 overflow-scroll h-fit">
+					<div className="min-h-40 bg-white border-1 border-gray-300 rounded-2xl p-3 flex flex-col gap-3 overflow-scroll ">
 						{savedStocks.map((item, index) => {
 							return (
 							<div key={index} className={"flex gap-2 " + (index > 0 ? "border-t-1 border-gray-300 pt-3" : "")}>

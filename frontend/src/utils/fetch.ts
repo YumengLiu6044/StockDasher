@@ -1,11 +1,12 @@
-const BACKEND_URL = "http://0.0.0.0:10000";
+import {
+	StockSearchResult,
+	SavedCompanyInfo,
+	GetPriceRequest,
+	GetPriceResponse,
+	QuoteData,
+} from "./types";
 
-export type StockSearchResult = {
-	symbol: string;
-	description: string;
-	type: string;
-	displaySymbol: string;
-};
+const BACKEND_URL = "http://0.0.0.0:10000";
 
 export async function searchStock(query: string): Promise<StockSearchResult[]> {
 	const request = { query: query };
@@ -28,22 +29,6 @@ export async function searchStock(query: string): Promise<StockSearchResult[]> {
 	return searchData;
 }
 
-type QuoteData = {
-	c: number; // current price
-	h: number; // high price of the day
-	l: number; // low price of the day
-	o: number; // open price of the day
-	pc: number; // previous close price
-	t: number; // timestamp (Unix time)
-};
-
-export type SavedCompanyInfo = {
-	symbol: string;
-	description: string;
-	price: number;
-	change_percent: number;
-};
-
 export async function searchCompanyInfo(
 	stockSearch: StockSearchResult
 ): Promise<SavedCompanyInfo | null> {
@@ -59,7 +44,7 @@ export async function searchCompanyInfo(
 			body: JSON.stringify(request),
 		});
 
-		if (quoteResponse.status !== 200) return null
+		if (quoteResponse.status !== 200) return null;
 
 		const quoteData = (await quoteResponse.json()) as QuoteData;
 
@@ -76,15 +61,7 @@ export async function searchCompanyInfo(
 	}
 }
 
-export async function getPrice(
-	symbol: string,
-	priceFunction: string
-): Promise<any | null> {
-	const request = {
-		symbol: symbol,
-		function: priceFunction,
-	};
-
+export async function getPrice(request: GetPriceRequest): Promise<GetPriceResponse | null> {
 	try {
 		const response = await fetch(BACKEND_URL + "/getStockPrice", {
 			method: "POST",
@@ -94,18 +71,10 @@ export async function getPrice(
 			body: JSON.stringify(request),
 		});
 
-		const data = await response.json();
+		const data = await response.json() as GetPriceResponse;
 		return data;
 	} catch (error) {
 		console.error(error);
 		return null;
 	}
 }
-
-export type TrendingStock = {
-	change_amount: number;
-	change_percentage: string;
-	price: number;
-	ticker: string;
-	volume: number;
-};

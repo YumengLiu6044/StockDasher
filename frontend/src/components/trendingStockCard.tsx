@@ -1,4 +1,4 @@
-import { TrendingStock } from "../utils/fetch";
+import { TrendingStock } from "../utils/types";
 
 interface TrendingStockCardProp {
 	data: TrendingStock;
