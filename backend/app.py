@@ -101,16 +101,12 @@ class GetStockPrice(BaseModel):
 
 
 def format_entry(entry):
-    dt = datetime.strptime(entry["t"], "%Y-%m-%dT%H:%M:%SZ")
-    unix_time = int(dt.timestamp())
-    close_price = entry["c"]
-    open_price = entry["o"]
-    percent_change = (close_price - open_price) / open_price
     return {
-        "time": unix_time,
-        "open": open_price,
-        "close": close_price,
-        "pc": percent_change
+        "time": entry["t"],
+        "open": entry["o"],
+        "close": entry["c"],
+        "high": entry["h"],
+        "low": entry["l"],
     }
 
 @app.post("/getStockPrice")
@@ -128,8 +124,6 @@ async def getStockPrice(stock_request: GetStockPrice):
 
     results = result.json()
     bars = results["bars"]
-
-
 
     formatted_data = [format_entry(i) for i in bars]
 
