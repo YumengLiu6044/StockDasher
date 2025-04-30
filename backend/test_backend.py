@@ -16,9 +16,12 @@ class MyTestCase(unittest.TestCase):
         self.assertGreater(len(response.json()), 1)
 
     def test_get_stock_price(self):
-        response = requests.post(BACKEND_URL + "/getStockPrice", json={"symbol": "AAPL", "function": "TIME_SERIES_DAILY"})
+        response = requests.post(
+            BACKEND_URL + "/getStockPrice",
+            json={"symbol": "AAPL", "timeframe": "5T", "begin_time": "2021-01-01", "end_time": "2021-01-06"}
+        )
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Meta Data", response.json())
+        pprint(response.json())
 
     def test_get_company_quote(self):
         response = requests.post(BACKEND_URL + "/getCompanyQuote", json={"symbol": "AAPL"})

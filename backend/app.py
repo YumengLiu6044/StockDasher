@@ -20,6 +20,18 @@ FINNHUB_URL = "https://finnhub.io/api/v1/search?q={}&exchange=US&token={}"
 ALPHA_V_KEY = os.getenv("ALPHA_V_API_KEY")
 ALPHA_V_URL = "https://www.alphavantage.co/query"
 
+#Alpaca setup
+ALPACA_KEY_ID = os.getenv("ALPACA_KEY_ID")
+ALPACA_SECRET_KEY = os.getenv("ALPACA_SECRET")
+ALPACA_URL = "https://data.alpaca.markets/v2/stocks/{}/bars?"
+
+alpaca_headers = {
+    "accept": "application/json",
+    "APCA-API-KEY-ID": ALPACA_KEY_ID,
+    "APCA-API-SECRET-KEY": ALPACA_SECRET_KEY
+}
+
+
 app = FastAPI()
 
 # Allow CORS
@@ -44,12 +56,12 @@ class SearchSymbol(BaseModel):
 
 time_of_last_search = time.time()
 
-def controlled_sleep():
+def controlled_sleep(min_time_delta=1.0):
     global time_of_last_search
     current_time = time.time()
     delta = current_time - time_of_last_search
-    if delta < 1:
-        time.sleep(1 - delta)
+    if delta < min_time_delta:
+        time.sleep(min_time_delta - delta)
 
     time_of_last_search = current_time
 
@@ -77,15 +89,21 @@ async def getCompanyQuote(request: SearchCompany):
 
 class GetStockPrice(BaseModel):
     symbol: str
-    function: str
+    timeframe: str = "1D"
+    begin_time: str = None
+    end_time: str = None
 
 
 @app.post("/getStockPrice")
 async def getStockPrice(stock_request: GetStockPrice):
-    time.sleep(1)
-    query_format = f"function={stock_request.function}&symbol={stock_request.symbol}&apikey={ALPHA_V_KEY}"
-    full_url = ALPHA_V_URL + "?" + query_format
-    result = requests.get(full_url)
+    controlled_sleep(0.3)
+    params = {
+        "timeframe": stock_request.timeframe,
+        "start": stock_request.begin_time,
+        "end": stock_request.end_time,
+    }
+    formatted_base = ALPACA_URL.format(stock_request.symbol)
+    result = requests.get(formatted_base, params=params, headers=alpaca_headers)
     return result.json()
 
 
