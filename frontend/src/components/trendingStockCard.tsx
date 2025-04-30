@@ -19,7 +19,7 @@ export default function TrendingStockCard({ data }: TrendingStockCardProp) {
 	const cleanedTicker = data.ticker.replace(/[^a-zA-Z0-9]/g, "");
 
 	return (
-		<div className="w-full p-4 bg-white border-1 border-gray-300 rounded-2xl flex flex-col gap-6 hover:shadow-lg transition-all">
+		<div className="w-full p-4 bg-white border-1 border-gray-300 hover:border-gray-500 rounded-2xl flex flex-col gap-6 hover:shadow-lg transition-all">
 			<div className="flex gap-2 items-center">
 				<img
 					className="aspect-square w-10 rounded-full border-1 border-gray-200"

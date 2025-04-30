@@ -23,12 +23,12 @@ function Sidebar(prop: SidebarProp) {
 			<div className="flex gap-2 items-center transition-opacity duration-300">
 				<i className="bi bi-coin text-4xl font-bold"></i>
 				{prop.showSidebar && (
-					<span className="text-2xl font-bold">Stock Dasher</span>
+					<span className="hidden md:flex text-2xl font-bold">Stock Dasher</span>
 				)}
 			</div>
 
 			{prop.showSidebar && (
-				<div className="gradient-bg rounded-2xl flex text-white p-5 w-full items-center justify-between">
+				<div className="hidden md:flex gradient-bg rounded-2xl text-white p-5 w-full items-center justify-between">
 					<div className="flex flex-col gap-2">
 						<span className="font-light">Total Investment</span>
 						<span className="text-2xl">$3219.62</span>
@@ -57,7 +57,7 @@ function Sidebar(prop: SidebarProp) {
 							<i
 								className={`${item.iconName} font-medium text-xl`}
 							></i>
-							{prop.showSidebar && <span>{item.name}</span>}
+							{prop.showSidebar && <span className="hidden md:flex">{item.name}</span>}
 						</div>
 					))}
 				</div>
@@ -74,7 +74,7 @@ function Sidebar(prop: SidebarProp) {
 							<i
 								className={`${item.iconName} font-medium text-xl`}
 							></i>
-							{prop.showSidebar && <span>{item.name}</span>}
+							{prop.showSidebar && <span className="hidden md:flex">{item.name}</span>}
 						</div>
 					))}
 				</div>

@@ -16,7 +16,8 @@ export default function Dashboard({
 	stockInView,
 }: DashboardProps) {
 	const divRef = useRef<HTMLDivElement | null>(null);
-	const [candleDataInView, setCandleDataInView] = useState<GetPriceResponse | null>(null)
+	const [candleDataInView, setCandleDataInView] =
+		useState<GetPriceResponse | null>(null);
 
 	return (
 		<div className="bg-gray-100 h-full w-full p-5" ref={divRef}>
@@ -30,13 +31,13 @@ export default function Dashboard({
 					))}
 			</div>
 
-			<div className="grid grid-cols-1 lg:grid-cols-3 py-5 gap-5">
+			<div className="flex flex-col md:flex-row lg:flex-row py-5 gap-5">
 				<StockPriceView
 					companyInView={stockInView}
 					candleData={candleDataInView}
 					showCandle={true}
 				></StockPriceView>
-				<div className="cols-span-1 flex flex-col gap-3">
+				<div className="w-full flex flex-col gap-3">
 					<span className="text-xl">Saved Stocks</span>
 					<div className="min-h-40 bg-white border-1 border-gray-300 rounded-2xl p-3 flex flex-col gap-3 overflow-scroll ">
 						{savedStocks.map((item, index) => {
