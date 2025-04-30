@@ -31,7 +31,7 @@ export default function Dashboard({
 					))}
 			</div>
 
-			<div className="flex flex-col md:flex-row lg:flex-row py-5 gap-5">
+			<div className="flex flex-col lg:flex-row py-5 gap-5">
 				<StockPriceView
 					companyInView={stockInView}
 					candleData={candleDataInView}

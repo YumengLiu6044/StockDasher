@@ -91,7 +91,7 @@ export default function StockPriceView({
 
 	return (
 		<div
-			className="w-full md:min-w-2xl h-full bg-white border-1 border-gray-300 rounded-2xl p-3"
+			className="w-full lg:min-w-2xl h-full bg-white border-1 border-gray-300 rounded-2xl p-3"
 			ref={chartDivRef}
 		></div>
 	);
