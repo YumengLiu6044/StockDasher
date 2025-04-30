@@ -22,7 +22,6 @@ class MyTestCase(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertIn("data", response.json())
-        pprint(response.json())
 
     def test_get_company_quote(self):
         response = requests.post(BACKEND_URL + "/getCompanyQuote", json={"symbol": "AAPL"})

@@ -70,7 +70,12 @@ def controlled_sleep(min_time_delta=1.0):
 async def searchStockSymbol(request: SearchSymbol):
     controlled_sleep()
     request_url = FINNHUB_URL.format(request.query, FINNHUB_KEY)
-    result = requests.get(request_url).json()
+    result = requests.get(request_url)
+
+    if result.status_code != 200:
+        raise HTTPException(status_code=401, detail=result.text)
+
+    result = result.json()
     result = result["result"][:search_limit]
     return result
 
@@ -95,6 +100,19 @@ class GetStockPrice(BaseModel):
     end_time: str = None
 
 
+def format_entry(entry):
+    dt = datetime.strptime(entry["t"], "%Y-%m-%dT%H:%M:%SZ")
+    unix_time = int(dt.timestamp())
+    close_price = entry["c"]
+    open_price = entry["o"]
+    percent_change = (close_price - open_price) / open_price
+    return {
+        "time": unix_time,
+        "open": open_price,
+        "close": close_price,
+        "pc": percent_change
+    }
+
 @app.post("/getStockPrice")
 async def getStockPrice(stock_request: GetStockPrice):
     controlled_sleep(0.3)
@@ -105,21 +123,13 @@ async def getStockPrice(stock_request: GetStockPrice):
     }
     formatted_base = ALPACA_URL.format(stock_request.symbol)
     result = requests.get(formatted_base, params=params, headers=alpaca_headers)
+    if result.status_code != 200:
+        raise HTTPException(status_code=401, detail=result.text)
+
     results = result.json()
     bars = results["bars"]
 
-    def format_entry(entry):
-        dt = datetime.strptime(entry["t"], "%Y-%m-%dT%H:%M:%SZ")
-        unix_time = int(dt.timestamp())
-        close_price = entry["c"]
-        open_price = entry["o"]
-        percent_change = (close_price - open_price) / open_price
-        return {
-            "time": unix_time,
-            "open": open_price,
-            "close": close_price,
-            "pc": percent_change
-        }
+
 
     formatted_data = [format_entry(i) for i in bars]
 
