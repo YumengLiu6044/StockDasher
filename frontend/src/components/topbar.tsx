@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import headshot from "../assets/yumeng.jpeg";
 import loading from "../assets/loading.svg";
 import { searchStock } from "../utils/fetch";
@@ -6,16 +6,18 @@ import { StockSearchResult } from "../utils/types";
 
 interface TopBarProp {
 	handleMenuButtonClick: () => void;
-	handleClickSearchResult: (clickedResult: StockSearchResult) => void
+	handleClickSearchResult: (clickedResult: StockSearchResult) => void;
 }
 
 export default function Topbar(prop: TopBarProp) {
 	const [query, setQuery] = useState("");
 	const [debouncedInput, setDebouncedInput] = useState("");
+	const [showSearchResult, setShowSearchResult] = useState(false)
 	const [isLoading, setIsLoading] = useState(false);
 	const [searchResults, setSearchResults] = useState<
 		StockSearchResult[] | null
 	>(null);
+	const searchResultRef = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
 		const handler = setTimeout(() => {
@@ -30,12 +32,37 @@ export default function Topbar(prop: TopBarProp) {
 	useEffect(() => {
 		if (debouncedInput && !isLoading) {
 			setIsLoading(true);
+			setShowSearchResult(true)
 			searchStock(debouncedInput).then((data) => {
 				setSearchResults(data);
 				setIsLoading(false);
 			});
 		}
 	}, [debouncedInput]);
+
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			console.log("Clicked")
+			if (searchResultRef.current) {
+				const rect = searchResultRef.current.getBoundingClientRect();
+				const clickedX = event.clientX;
+				if (clickedX < rect.left || clickedX >= rect.right) {
+					setShowSearchResult(false);
+					return;
+				}
+				const clickedY = event.clientY;
+				if (clickedY < rect.top || clickedY >= rect.bottom) {
+					setShowSearchResult(false);
+					return;
+				}
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, []);
 
 	return (
 		<div className="w-full flex items-center justify-between border-b-1 border-gray-300 py-5 px-13">
@@ -62,14 +89,21 @@ export default function Topbar(prop: TopBarProp) {
 						}}
 					></input>
 
-					{searchResults &&
+					{(searchResults && showSearchResult) &&
 						searchResults.length > 0 &&
 						query.length > 0 && (
-							<div className="w-full absolute flex flex-col gap-3 rounded-xl border-1 border-gray-300 bg-white overflow-clip">
+							<div
+								className="w-full absolute flex flex-col gap-3 rounded-xl border-1 border-gray-300 bg-white overflow-clip"
+								ref={searchResultRef}
+							>
 								{searchResults.map((item, index) => (
 									<div
 										className="flex gap-2 items-center justify-between px-2 py-0.5 hover:bg-gray-300 transition-all"
-										onClick={() => prop.handleClickSearchResult(searchResults[index])}
+										onClick={() =>
+											prop.handleClickSearchResult(
+												searchResults[index]
+											)
+										}
 										key={index}
 									>
 										<span className="font-medium">

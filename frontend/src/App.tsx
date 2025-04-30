@@ -3,18 +3,12 @@ import Sidebar from "./components/sidebar";
 import Topbar from "./components/topbar";
 import Dashboard from "./components/dashboard";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import {
-	StockSearchResult,
-	SavedCompanyInfo,
-} from "./utils/types";
+import { StockSearchResult, SavedCompanyInfo } from "./utils/types";
 import { searchCompanyInfo } from "./utils/fetch";
-
 
 function App() {
 	const [showSideBar, setShowSideBar] = useState(true);
-	const [stockInView, setStockInView] = useState<SavedCompanyInfo | null>(
-		null
-	);
+	
 	const [isLoadingCompanyInfo, setIsLoadingCompanyInfo] = useState(false);
 	const [savedStocks, setSavedStocks] = useState<SavedCompanyInfo[]>([]);
 
@@ -24,7 +18,7 @@ function App() {
 				.map((item) => item.symbol)
 				.includes(clickedResult.symbol)
 		) {
-      console.log("Already contains")
+			console.log("Already contains");
 			return;
 		}
 
@@ -51,7 +45,7 @@ function App() {
 				></Topbar>
 				<Dashboard
 					savedStocks={savedStocks}
-					stockInView={stockInView}
+					setSavedStocks={setSavedStocks}
 				></Dashboard>
 			</div>
 		</div>

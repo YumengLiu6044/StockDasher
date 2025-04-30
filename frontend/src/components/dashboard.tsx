@@ -1,23 +1,90 @@
 import { useEffect, useRef, useState } from "react";
-import TrendingStockCard from "./trendingStockCard";
+import TrendingStockCard, { LOGO_KEY } from "./trendingStockCard";
 import { sampleTrendingStocks } from "../assets/sampleData";
 import StockPriceView from "./stockPriceView";
-import { SavedCompanyInfo } from "../utils/types";
-import { LOGO_KEY } from "./trendingStockCard";
-import { GetPriceResponse } from "../utils/types";
+import { SavedCompanyInfo, GetPriceResponse } from "../utils/types";
+import { getPrice } from "../utils/fetch";
 
 interface DashboardProps {
 	savedStocks: SavedCompanyInfo[];
-	stockInView: SavedCompanyInfo | null;
+	setSavedStocks: React.Dispatch<React.SetStateAction<SavedCompanyInfo[]>>;
 }
+
+const dropDownOptions = ["None", "Name", "Price", "Change"];
 
 export default function Dashboard({
 	savedStocks,
-	stockInView,
+	setSavedStocks,
 }: DashboardProps) {
 	const divRef = useRef<HTMLDivElement | null>(null);
+	const [sortOptionIndex, setSortOptionIndex] = useState(0);
+	const [isSortIncrease, setIsSortIncrease] = useState(false);
+	const [showSortOption, setShowOption] = useState(false);
 	const [candleDataInView, setCandleDataInView] =
 		useState<GetPriceResponse | null>(null);
+	const [stockInView, setStockInView] = useState<SavedCompanyInfo | null>(
+		null
+	);
+
+	const dropDownRef = useRef<HTMLDivElement | null>(null);
+
+	const handleClickSaved = (clickedSaved: SavedCompanyInfo) => {
+		setStockInView(clickedSaved);
+		
+	};
+
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (dropDownRef.current) {
+				const rect = dropDownRef.current.getBoundingClientRect();
+				const clickedX = event.clientX;
+				if (clickedX < rect.left || clickedX >= rect.right) {
+					setShowOption(false);
+					return;
+				}
+				const clickedY = event.clientY;
+				if (clickedY < rect.top || clickedY >= rect.bottom) {
+					setShowOption(false);
+					return;
+				}
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, []);
+
+	useEffect(() => {
+		const sortOption = dropDownOptions[sortOptionIndex];
+		if (sortOption === "None") {
+			return;
+		}
+		let sortedArray: SavedCompanyInfo[] = Array.from(savedStocks);
+		switch (sortOption) {
+			case "Name":
+				sortedArray.sort((a, b) =>
+					a.description.localeCompare(b.description)
+				);
+				break;
+
+			case "Price":
+				sortedArray.sort((a, b) => b.price - a.price);
+				break;
+
+			case "Change":
+				sortedArray.sort((a, b) => b.change_percent - a.change_percent);
+				break;
+
+			default:
+				break;
+		}
+		if (isSortIncrease) {
+			sortedArray.reverse();
+		}
+		setSavedStocks(sortedArray);
+	}, [sortOptionIndex, isSortIncrease]);
 
 	return (
 		<div className="bg-gray-100 h-full w-full p-5" ref={divRef}>
@@ -37,18 +104,78 @@ export default function Dashboard({
 					candleData={candleDataInView}
 					showCandle={true}
 				></StockPriceView>
-				<div className="w-full flex flex-col gap-3">
-					<span className="text-xl">Saved Stocks</span>
-					<div className="min-h-40 bg-white border-1 border-gray-300 rounded-2xl p-3 flex flex-col gap-3 overflow-scroll ">
+				<div className="w-full lg:max-w-100 flex flex-col gap-3">
+					<div className="flex justify-between">
+						<span className="text-xl">Saved Stocks</span>
+						<div className="flex gap-2 items-center">
+							<span className="text-gray-500">Sort By</span>
+							<div className="relative">
+								<span
+									className="border-1 border-gray-300 rounded-2xl px-2 py-1 bg-white hover:bg-gray-300 transition-all"
+									onClick={() => setShowOption(true)}
+								>
+									{dropDownOptions[sortOptionIndex]}
+								</span>
+								{showSortOption && (
+									<div
+										className="w-full absolute flex flex-col bg-white border-1 border-gray-300 rounded-2xl overflow-clip"
+										ref={dropDownRef}
+									>
+										{dropDownOptions.map(
+											(item, index) =>
+												index !== sortOptionIndex && (
+													<span
+														key={index}
+														className="hover:bg-gray-300 transition-all p-1 py-2"
+														onClick={() => {
+															setShowOption(
+																false
+															);
+															setSortOptionIndex(
+																index
+															);
+														}}
+													>
+														{item}
+													</span>
+												)
+										)}
+									</div>
+								)}
+							</div>
+							<div
+								className="hover:scale-110 transition-all"
+								onClick={() => {
+									setIsSortIncrease(!isSortIncrease);
+								}}
+							>
+								<i
+									className={`bi ${
+										isSortIncrease
+											? "bi-sort-up"
+											: "bi-sort-down"
+									} text-black`}
+								></i>
+							</div>
+						</div>
+					</div>
+					<div
+						className={`${
+							savedStocks.length > 0 ? "" : "min-h-40"
+						} bg-white border-1 border-gray-300 rounded-2xl flex flex-col overflow-scroll`}
+					>
 						{savedStocks.map((item, index) => {
 							return (
 								<div
 									key={index}
 									className={
-										"flex gap-2 " +
+										"flex gap-2 hover:bg-gray-300 transition-all px-3 py-2" +
 										(index > 0
-											? "border-t-1 border-gray-300 pt-3"
+											? " border-t-1 border-gray-300 "
 											: "")
+									}
+									onClick={() =>
+										handleClickSaved(savedStocks[index])
 									}
 								>
 									<img
@@ -65,22 +192,22 @@ export default function Dashboard({
 											</span>
 										</div>
 
-										<div className="flex flex-col">
+										<div className="flex flex-col items-end">
 											<span className="font-medium text-lg">
-												${item.price}
+												${item.price.toFixed(2)}
 											</span>
 											<span
-												className={
-													" text-gray-500 " +
-													(item.change_percent > 0
+												className={`${
+													item.change_percent > 0
 														? "text-green-500"
-														: "text-red-500")
-												}
+														: "text-red-500"
+												}`}
 											>
 												{item.change_percent > 0
 													? "+"
-													: "-"}
-												{item.change_percent}%
+													: ""}
+												{item.change_percent.toFixed(2)}
+												%
 											</span>
 										</div>
 									</div>

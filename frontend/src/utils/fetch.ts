@@ -25,7 +25,7 @@ export async function searchStock(query: string): Promise<StockSearchResult[]> {
 	} catch (err) {
 		console.log(err);
 	}
-	console.log(searchData);
+
 	return searchData;
 }
 
@@ -47,13 +47,14 @@ export async function searchCompanyInfo(
 		if (quoteResponse.status !== 200) return null;
 
 		const quoteData = (await quoteResponse.json()) as QuoteData;
-
+		if (!quoteData.dp || !quoteData.d) return null
 		const companyInfo: SavedCompanyInfo = {
 			symbol: stockSearch.symbol,
 			description: stockSearch.description,
 			price: quoteData.c,
-			change_percent: quoteData.pc,
+			change_percent: quoteData.dp,
 		};
+
 		return companyInfo;
 	} catch (err) {
 		console.log(err);
