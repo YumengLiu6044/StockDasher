@@ -1,20 +1,60 @@
-import Sidebar from './components/sidebar';
-import Topbar from './components/topbar';
-import { getStockLogo, getPrice } from './utils/fetch'
-import 'bootstrap-icons/font/bootstrap-icons.css';
-
+import { useState } from "react";
+import Sidebar from "./components/sidebar";
+import Topbar from "./components/topbar";
+import Dashboard from "./components/dashboard";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import {
+	StockSearchResult,
+	SavedCompanyInfo,
+	searchCompanyInfo,
+} from "./utils/fetch";
 
 function App() {
+	const [showSideBar, setShowSideBar] = useState(true);
+	const [stockInView, setStockInView] = useState<SavedCompanyInfo | null>(
+		null
+	);
+	const [isLoadingCompanyInfo, setIsLoadingCompanyInfo] = useState(false);
+	const [savedStocks, setSavedStocks] = useState<SavedCompanyInfo[]>([]);
 
-  return (
-    <div className='min-h-screen flex'>
-        <Sidebar></Sidebar>
+	const handleClickSearchResult = (clickedResult: StockSearchResult) => {
+		if (
+			savedStocks
+				.map((item) => item.symbol)
+				.includes(clickedResult.symbol)
+		) {
+      console.log("Already contains")
+			return;
+		}
 
-        <div className='flex flex-col w-full'>
-          <Topbar></Topbar>
-        </div>
-    </div>
-  )
+		if (isLoadingCompanyInfo) return;
+		setIsLoadingCompanyInfo(true);
+		searchCompanyInfo(clickedResult).then((data) => {
+			if (data) {
+				setSavedStocks([...savedStocks, data]);
+			}
+			setIsLoadingCompanyInfo(false);
+		});
+	};
+
+	return (
+		<div className="min-h-screen flex">
+			<Sidebar showSidebar={showSideBar}></Sidebar>
+
+			<div className="flex flex-col w-full">
+				<Topbar
+					handleClickSearchResult={handleClickSearchResult}
+					handleMenuButtonClick={() => {
+						setShowSideBar(!showSideBar);
+					}}
+				></Topbar>
+				<Dashboard
+					savedStocks={savedStocks}
+					stockInView={stockInView}
+				></Dashboard>
+			</div>
+		</div>
+	);
 }
 
-export default App
+export default App;

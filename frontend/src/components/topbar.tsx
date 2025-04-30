@@ -3,7 +3,12 @@ import headshot from "../assets/yumeng.jpeg";
 import loading from "../assets/loading.svg";
 import { searchStock, StockSearchResult } from "../utils/fetch";
 
-export default function Topbar() {
+interface TopBarProp {
+	handleMenuButtonClick: () => void;
+	handleClickSearchResult: (clickedResult: StockSearchResult) => void
+}
+
+export default function Topbar(prop: TopBarProp) {
 	const [query, setQuery] = useState("");
 	const [debouncedInput, setDebouncedInput] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
@@ -32,9 +37,12 @@ export default function Topbar() {
 	}, [debouncedInput]);
 
 	return (
-		<div className="w-full flex items-center justify-between border-b-1 border-gray-300 py-5 px-10">
+		<div className="w-full flex items-center justify-between border-b-1 border-gray-300 py-5 px-13">
 			<div className="flex gap-3 w-full">
-				<i className="bi bi-list rounded-xl border-1 border-gray-300 text-gray-600 p-2"></i>
+				<i
+					className="bi bi-list rounded-xl border-1 border-gray-300 text-gray-600 p-2 hover:bg-gray-200 transition-all"
+					onClick={prop.handleMenuButtonClick}
+				></i>
 				<div className="relative max-w-80 w-full">
 					<i className="absolute left-3 top-2 bi bi-search text-gray-600 text-lg"></i>
 					{isLoading && (
@@ -60,12 +68,13 @@ export default function Topbar() {
 								{searchResults.map((item, index) => (
 									<div
 										className="flex gap-2 items-center justify-between px-2 py-0.5 hover:bg-gray-300 transition-all"
+										onClick={() => prop.handleClickSearchResult(searchResults[index])}
 										key={index}
 									>
 										<span className="font-medium">
 											{item.symbol}
 										</span>
-										<span className="text-gray-600">
+										<span className="text-gray-600 whitespace-nowrap overflow-ellipsis">
 											{item.description}
 										</span>
 									</div>
@@ -77,8 +86,8 @@ export default function Topbar() {
 
 			<div className="hidden lg:flex gap-5 items-center justify-end w-full">
 				<div className="flex gap-5 border-r-1 border-gray-300 px-3">
-					<i className="bi bi-envelope text-gray-600 text-2xl p-2"></i>
-					<i className="bi bi-bell text-gray-600 text-2xl p-2"></i>
+					<i className="bi bi-envelope text-gray-600 text-2xl p-2 hover:scale-120 transition-all"></i>
+					<i className="bi bi-bell text-gray-600 text-2xl p-2 hover:scale-120 transition-all"></i>
 				</div>
 
 				<div className="flex gap-5 items-center justify-between">

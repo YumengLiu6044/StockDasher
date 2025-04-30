@@ -8,7 +8,7 @@ export type StockSearchResult = {
 };
 
 export async function searchStock(query: string): Promise<StockSearchResult[]> {
-	const request = { query };
+	const request = { query: query };
 	let searchData: StockSearchResult[] = [];
 
 	try {
@@ -24,15 +24,34 @@ export async function searchStock(query: string): Promise<StockSearchResult[]> {
 	} catch (err) {
 		console.log(err);
 	}
-	console.log(searchData)
+	console.log(searchData);
 	return searchData;
 }
 
-export async function getStockLogo(symbol: string): Promise<any | null> {
-	const request = { symbol: symbol };
+type QuoteData = {
+	c: number; // current price
+	h: number; // high price of the day
+	l: number; // low price of the day
+	o: number; // open price of the day
+	pc: number; // previous close price
+	t: number; // timestamp (Unix time)
+};
+
+export type SavedCompanyInfo = {
+	symbol: string;
+	description: string;
+	price: number;
+	change_percent: number;
+};
+
+export async function searchCompanyInfo(
+	stockSearch: StockSearchResult
+): Promise<SavedCompanyInfo | null> {
+	const request = { symbol: stockSearch.symbol };
 
 	try {
-		const response = await fetch(BACKEND_URL + "/getStockLogo", {
+		// Get quote
+		const quoteResponse = await fetch(BACKEND_URL + "/getCompanyQuote", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -40,15 +59,27 @@ export async function getStockLogo(symbol: string): Promise<any | null> {
 			body: JSON.stringify(request),
 		});
 
-		const data = await response.json();
-		return data;
-	} catch (error) {
-		console.error(error);
+		if (quoteResponse.status !== 200) return null
+
+		const quoteData = (await quoteResponse.json()) as QuoteData;
+
+		const companyInfo: SavedCompanyInfo = {
+			symbol: stockSearch.symbol,
+			description: stockSearch.description,
+			price: quoteData.c,
+			change_percent: quoteData.pc,
+		};
+		return companyInfo;
+	} catch (err) {
+		console.log(err);
 		return null;
 	}
 }
 
-export async function getPrice(symbol: string, priceFunction: string): Promise<any | null> {
+export async function getPrice(
+	symbol: string,
+	priceFunction: string
+): Promise<any | null> {
 	const request = {
 		symbol: symbol,
 		function: priceFunction,
@@ -70,3 +101,11 @@ export async function getPrice(symbol: string, priceFunction: string): Promise<a
 		return null;
 	}
 }
+
+export type TrendingStock = {
+	change_amount: number;
+	change_percentage: string;
+	price: number;
+	ticker: string;
+	volume: number;
+};

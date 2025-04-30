@@ -1,5 +1,6 @@
 import unittest
 import requests
+from pprint import pprint
 
 BACKEND_URL = "http://0.0.0.0:10000"
 
@@ -13,17 +14,16 @@ class MyTestCase(unittest.TestCase):
         response = requests.post(BACKEND_URL + "/searchSymbol", json={"query": "AAPL"})
         self.assertEqual(response.status_code, 200)
         self.assertGreater(len(response.json()), 1)
-        print(response.json())
-
-    def test_get_stock_logo(self):
-        response = requests.post(BACKEND_URL + "/getStockLogo", json={"symbol": "AAPL"})
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("logo", response.json())
 
     def test_get_stock_price(self):
         response = requests.post(BACKEND_URL + "/getStockPrice", json={"symbol": "AAPL", "function": "TIME_SERIES_DAILY"})
         self.assertEqual(response.status_code, 200)
         self.assertIn("Meta Data", response.json())
+
+    def test_get_company_quote(self):
+        response = requests.post(BACKEND_URL + "/getCompanyQuote", json={"symbol": "AAPL"})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("pc", response.json())
 
 if __name__ == '__main__':
     unittest.main()

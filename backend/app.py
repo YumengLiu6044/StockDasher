@@ -1,20 +1,24 @@
 from dotenv import main
 import os
 import finnhub
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from finnhub import FinnhubAPIException
 from pydantic import BaseModel
-import requests
 import uvicorn
+import time
+from pprint import pprint
+import requests
 
 
 main.load_dotenv()
 # Finnhub setup
 FINNHUB_KEY = os.getenv("FINNHUB_API_KEY")
 finnhub_client = finnhub.Client(api_key=FINNHUB_KEY)
+FINNHUB_URL = "https://finnhub.io/api/v1/search?q={}&exchange=US&token={}"
 
 #Alpha Vantage Setup
-ALPHA_V_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
+ALPHA_V_KEY = os.getenv("ALPHA_V_API_KEY")
 ALPHA_V_URL = "https://www.alphavantage.co/query"
 
 app = FastAPI()
@@ -42,19 +46,25 @@ class SearchSymbol(BaseModel):
 
 @app.post("/searchSymbol")
 async def searchStockSymbol(request: SearchSymbol):
-    result = finnhub_client.symbol_lookup(request.query)
+    time.sleep(1)
+    request_url = FINNHUB_URL.format(request.query, FINNHUB_KEY)
+    result = requests.get(request_url).json()
     result = result["result"][:search_limit]
+    pprint(result)
     return result
 
 
-class GetStockLogo(BaseModel):
+class SearchCompany(BaseModel):
     symbol: str
 
+@app.post("/getCompanyQuote")
+async def getCompanyQuote(request: SearchCompany):
+    time.sleep(1)
+    try:
+        return finnhub_client.quote(request.symbol)
 
-@app.post("/getStockLogo")
-async def getStockLogo(request: GetStockLogo):
-    result = finnhub_client.company_profile2(symbol=request.symbol)
-    return result
+    except FinnhubAPIException as e:
+        raise HTTPException(status_code=401, detail="Symbol not found")
 
 
 class GetStockPrice(BaseModel):
@@ -64,6 +74,7 @@ class GetStockPrice(BaseModel):
 
 @app.post("/getStockPrice")
 async def getStockPrice(stock_request: GetStockPrice):
+    time.sleep(1)
     query_format = f"function={stock_request.function}&symbol={stock_request.symbol}&apikey={ALPHA_V_KEY}"
     full_url = ALPHA_V_URL + "?" + query_format
     result = requests.get(full_url)
