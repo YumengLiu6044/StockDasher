@@ -6,8 +6,9 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import {
 	StockSearchResult,
 	SavedCompanyInfo,
-	searchCompanyInfo,
-} from "./utils/fetch";
+} from "./utils/types";
+import { searchCompanyInfo } from "./utils/fetch";
+
 
 function App() {
 	const [showSideBar, setShowSideBar] = useState(true);
