@@ -7,7 +7,6 @@ from finnhub import FinnhubAPIException
 from pydantic import BaseModel
 import uvicorn
 import time
-from pprint import pprint
 import requests
 
 
@@ -43,14 +42,23 @@ search_limit = 5
 class SearchSymbol(BaseModel):
     query: str
 
+time_of_last_search = time.time()
+
+def controlled_sleep():
+    global time_of_last_search
+    current_time = time.time()
+    delta = current_time - time_of_last_search
+    if delta < 1:
+        time.sleep(1 - delta)
+
+    time_of_last_search = current_time
 
 @app.post("/searchSymbol")
 async def searchStockSymbol(request: SearchSymbol):
-    time.sleep(1)
+    controlled_sleep()
     request_url = FINNHUB_URL.format(request.query, FINNHUB_KEY)
     result = requests.get(request_url).json()
     result = result["result"][:search_limit]
-    pprint(result)
     return result
 
 
@@ -59,11 +67,11 @@ class SearchCompany(BaseModel):
 
 @app.post("/getCompanyQuote")
 async def getCompanyQuote(request: SearchCompany):
-    time.sleep(1)
+    controlled_sleep()
     try:
         return finnhub_client.quote(request.symbol)
 
-    except FinnhubAPIException as e:
+    except FinnhubAPIException:
         raise HTTPException(status_code=401, detail="Symbol not found")
 
 
