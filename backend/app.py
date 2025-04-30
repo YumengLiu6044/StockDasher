@@ -8,6 +8,7 @@ from pydantic import BaseModel
 import uvicorn
 import time
 import requests
+from datetime import datetime
 
 
 main.load_dotenv()
@@ -17,8 +18,8 @@ finnhub_client = finnhub.Client(api_key=FINNHUB_KEY)
 FINNHUB_URL = "https://finnhub.io/api/v1/search?q={}&exchange=US&token={}"
 
 #Alpha Vantage Setup
-ALPHA_V_KEY = os.getenv("ALPHA_V_API_KEY")
-ALPHA_V_URL = "https://www.alphavantage.co/query"
+# ALPHA_V_KEY = os.getenv("ALPHA_V_API_KEY")
+# ALPHA_V_URL = "https://www.alphavantage.co/query"
 
 #Alpaca setup
 ALPACA_KEY_ID = os.getenv("ALPACA_KEY_ID")
@@ -104,7 +105,25 @@ async def getStockPrice(stock_request: GetStockPrice):
     }
     formatted_base = ALPACA_URL.format(stock_request.symbol)
     result = requests.get(formatted_base, params=params, headers=alpaca_headers)
-    return result.json()
+    results = result.json()
+    bars = results["bars"]
+
+    def format_entry(entry):
+        dt = datetime.strptime(entry["t"], "%Y-%m-%dT%H:%M:%SZ")
+        unix_time = int(dt.timestamp())
+        close_price = entry["c"]
+        open_price = entry["o"]
+        percent_change = (close_price - open_price) / open_price
+        return {
+            "time": unix_time,
+            "open": open_price,
+            "close": close_price,
+            "pc": percent_change
+        }
+
+    formatted_data = [format_entry(i) for i in bars]
+
+    return {"data": formatted_data}
 
 
 if __name__ == "__main__":

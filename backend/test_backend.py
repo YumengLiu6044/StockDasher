@@ -18,9 +18,10 @@ class MyTestCase(unittest.TestCase):
     def test_get_stock_price(self):
         response = requests.post(
             BACKEND_URL + "/getStockPrice",
-            json={"symbol": "AAPL", "timeframe": "5T", "begin_time": "2021-01-01", "end_time": "2021-01-06"}
+            json={"symbol": "AAPL", "timeframe": "1D", "begin_time": "2021-01-01", "end_time": "2021-01-08"}
         )
         self.assertEqual(response.status_code, 200)
+        self.assertIn("data", response.json())
         pprint(response.json())
 
     def test_get_company_quote(self):
