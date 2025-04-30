@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import headshot from "../assets/yumeng.jpeg";
 import loading from "../assets/loading.svg";
-import { searchStock, StockSearchResult } from "../utils/fetch";
+import { searchStock } from "../utils/fetch";
+import { StockSearchResult } from "../utils/types";
 
 interface TopBarProp {
 	handleMenuButtonClick: () => void;
