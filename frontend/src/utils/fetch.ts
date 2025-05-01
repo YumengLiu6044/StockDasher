@@ -7,7 +7,7 @@ import {
 	TrendingStock,
 } from "./types";
 
-const BACKEND_URL = "http://0.0.0.0:10000";
+const BACKEND_URL = "https://stockdasher.onrender.com";
 
 export async function searchStock(query: string): Promise<StockSearchResult[]> {
 	const request = { query: query };
