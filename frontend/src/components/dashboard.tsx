@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import TrendingStockCard, { LOGO_KEY } from "./trendingStockCard";
-import { sampleTrendingStocks } from "../assets/sampleData";
 import StockPriceView from "./stockPriceView";
 import { SavedCompanyInfo, TrendingStock } from "../utils/types";
 import { getTopEarners } from "../utils/fetch";
@@ -104,9 +103,9 @@ export default function Dashboard({
 					))}
 			</div>
 
-			<div className="flex flex-col lg:flex-row py-5 gap-5">
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 py-5 gap-5">
 				<StockPriceView companyInView={stockInView}></StockPriceView>
-				<div className="w-full lg:max-w-100 flex flex-col gap-3">
+				<div className="w-full flex flex-col gap-3">
 					<div className="flex justify-between">
 						<span className="text-xl">Saved Stocks</span>
 						<div className="flex gap-2 items-center">

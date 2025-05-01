@@ -135,7 +135,7 @@ export default function StockPriceView({
 	}, [candleData])
 
 	return (
-		<div className="w-full h-full min-h-100 bg-white border-1 border-gray-300 rounded-2xl p-5 flex flex-col gap-4">
+		<div className="col-span-1 lg:col-span-2 min-h-100 bg-white border-1 border-gray-300 rounded-2xl p-5 flex flex-col gap-4">
 			{companyInView && (
 				<div className="flex justify-between">
 					<div className="flex gap-2">
