@@ -3,7 +3,7 @@ import TrendingStockCard, { LOGO_KEY } from "./trendingStockCard";
 import StockPriceView from "./stockPriceView";
 import { SavedCompanyInfo, TrendingStock } from "../utils/types";
 import { getInfoFromRecommendation, getTopEarners } from "../utils/fetch";
-import loading from "../assets/loading.svg"
+import loading from "../assets/loading.svg";
 
 interface DashboardProps {
 	savedStocks: SavedCompanyInfo[];
@@ -46,13 +46,13 @@ export default function Dashboard({
 		}
 
 		if (isLoadingCompanyInfo) return;
-		setIsLoadingCompanyInfo(true)
+		setIsLoadingCompanyInfo(true);
 
 		getInfoFromRecommendation(cleanedSymbol).then((newSavedInfo) => {
 			console.log(newSavedInfo);
 			if (newSavedInfo) {
 				if (savedStocks.length === 0) {
-					setStockInView(newSavedInfo)
+					setStockInView(newSavedInfo);
 				}
 				setSavedStocks([...savedStocks, newSavedInfo]);
 			}
@@ -199,10 +199,7 @@ export default function Dashboard({
 							savedStocks.length > 0 ? "" : "min-h-40"
 						} bg-white border-1 border-gray-300 rounded-2xl flex flex-col overflow-scroll`}
 					>
-						{isLoadingCompanyInfo ? <div className="flex justify-center">
-
-							<img src={loading}></img>
-						</div> : savedStocks.map((item, index) => {
+						{savedStocks.map((item, index) => {
 							return (
 								<div
 									key={index}
@@ -252,6 +249,11 @@ export default function Dashboard({
 								</div>
 							);
 						})}
+						{isLoadingCompanyInfo && (
+							<div className="flex justify-center p-1">
+								<img src={loading}></img>
+							</div>
+						)}
 					</div>
 				</div>
 			</div>
