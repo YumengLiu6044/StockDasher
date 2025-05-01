@@ -20,7 +20,7 @@
 ### 🖥 Frontend
 - React
 - TradingView for Charting
-- Tailwind CSS
+- Tailwind CSS for reflexive design
 
 ### 🐍 Backend
 - **FastAPI** – Python-based backend server
