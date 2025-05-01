@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import TrendingStockCard, { LOGO_KEY } from "./trendingStockCard";
 import { sampleTrendingStocks } from "../assets/sampleData";
 import StockPriceView from "./stockPriceView";
-import { SavedCompanyInfo } from "../utils/types";
+import { SavedCompanyInfo, TrendingStock } from "../utils/types";
+import { getTopEarners } from "../utils/fetch";
 
 interface DashboardProps {
 	savedStocks: SavedCompanyInfo[];
@@ -23,7 +24,7 @@ export default function Dashboard({
 	const [sortOptionIndex, setSortOptionIndex] = useState(0);
 	const [isSortIncrease, setIsSortIncrease] = useState(false);
 	const [showSortOption, setShowOption] = useState(false);
-
+	const [trendingStocks, setTrendingStocks] = useState<TrendingStock[]>([])
 
 
 	const dropDownRef = useRef<HTMLDivElement | null>(null);
@@ -33,6 +34,12 @@ export default function Dashboard({
 	};
 
 	useEffect(() => {
+		if (divRef.current) {
+			getTopEarners().then((stocks) => {
+				setTrendingStocks(stocks ?? [])
+			})
+		}
+
 		const handleClickOutside = (event: MouseEvent) => {
 			if (dropDownRef.current) {
 				const rect = dropDownRef.current.getBoundingClientRect();
@@ -89,8 +96,8 @@ export default function Dashboard({
 		<div className="bg-gray-100 h-full w-full p-5" ref={divRef}>
 			<span className="text-xl">Trending Stocks</span>
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full overflow-scroll pt-5">
-				{sampleTrendingStocks.length > 0 &&
-					sampleTrendingStocks.map((item, index) => (
+				{trendingStocks.length > 0 &&
+					trendingStocks.map((item, index) => (
 						<div key={index} className="w-full">
 							<TrendingStockCard data={item}></TrendingStockCard>
 						</div>

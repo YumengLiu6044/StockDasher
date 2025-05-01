@@ -16,9 +16,9 @@ FINNHUB_KEY = os.getenv("FINNHUB_API_KEY")
 finnhub_client = finnhub.Client(api_key=FINNHUB_KEY)
 FINNHUB_URL = "https://finnhub.io/api/v1/search?q={}&exchange=US&token={}"
 
-#Alpha Vantage Setup
-# ALPHA_V_KEY = os.getenv("ALPHA_V_API_KEY")
-# ALPHA_V_URL = "https://www.alphavantage.co/query"
+# Alpha Vantage Setup
+ALPHA_V_KEY = os.getenv("ALPHA_V_API_KEY")
+ALPHA_V_URL = "https://www.alphavantage.co/query"
 
 #Alpaca setup
 ALPACA_KEY_ID = os.getenv("ALPACA_KEY_ID")
@@ -151,6 +151,25 @@ async def getStockPrice(stock_request: GetStockPrice):
 
     formatted_data = [format_data(entry) for entry in bars]
     return {"data": formatted_data}
+
+
+cached_result = None
+last_earner_update = time.time()
+
+@app.get("/getTopEearners")
+async def getStockPrice():
+    global cached_result, last_earner_update
+    current_time = time.time()
+    if cached_result and current_time - last_earner_update < 3600 * 12:
+        return cached_result
+    else:
+        last_earner_update = current_time
+
+    query_format = f"function=TOP_GAINERS_LOSERS&apikey={ALPHA_V_KEY}"
+    full_url = ALPHA_V_URL + "?" + query_format
+    result = requests.get(full_url)
+    cached_result = result.json()
+    return result.json()
 
 
 if __name__ == "__main__":

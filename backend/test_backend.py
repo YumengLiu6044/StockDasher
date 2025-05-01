@@ -28,5 +28,10 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("pc", response.json())
 
+    def test_get_top_earners(self):
+        response = requests.get(BACKEND_URL + "/getTopEearners")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("top_gainers", response.json())
+
 if __name__ == '__main__':
     unittest.main()

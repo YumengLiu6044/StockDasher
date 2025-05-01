@@ -4,6 +4,7 @@ import {
 	GetPriceRequest,
 	GetPriceResponse,
 	QuoteData,
+	TrendingStock,
 } from "./types";
 
 const BACKEND_URL = "http://0.0.0.0:10000";
@@ -74,6 +75,21 @@ export async function getPrice(request: GetPriceRequest): Promise<GetPriceRespon
 
 		const data = await response.json();
 		return data.data as GetPriceResponse;
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
+export async function getTopEarners() : Promise<TrendingStock[] | null> {
+	try {
+		const response = await fetch(BACKEND_URL + "/getTopEearners", {
+			method: "GET"
+		});
+
+		const data = await response.json();
+		const stocks = data.top_gainers as TrendingStock[];
+		return stocks.slice(0, 4)
 	} catch (error) {
 		console.error(error);
 		return null;

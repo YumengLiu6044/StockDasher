@@ -17,13 +17,6 @@ import { getPrice } from "../utils/fetch";
 interface StockPriceViewProps {
 	companyInView: SavedCompanyInfo | null;
 }
-function getCurrentTime() {
-	const date = new Date();
-	const hour = date.getHours();
-	const minutes = date.getMinutes();
-	const seconds = date.getSeconds();
-	return `${hour}:${minutes}:${seconds}`;
-}
 
 const Timeframes = [
 	{
@@ -54,15 +47,13 @@ export default function StockPriceView({
 }: StockPriceViewProps) {
 	const chartDivRef = useRef<HTMLDivElement | null>(null);
 	const chartRef = useRef<IChartApi | null>(null)
-	const [lastUpdatedTime, setLastUpdatedTime] = useState(getCurrentTime());
+	const [lastUpdatedTime, setLastUpdatedTime] = useState("");
 	const [timeFrameIndex, setTimeFrameIndex] = useState(0);
 	const [candleData, setCandleData] = useState<GetPriceResponse | null>(null);
 
 
 	useEffect(() => {
 		if (!companyInView) return;
-
-		setLastUpdatedTime(getCurrentTime());
 
 		const timeInterval = Timeframes[timeFrameIndex].durationMs;
 		const date = new Date()
@@ -124,6 +115,10 @@ export default function StockPriceView({
 
 	useEffect(() => {
 		if (!chartRef.current || !candleData) return
+
+		const lastData = candleData[candleData.length - 1]
+		const lastUpdate = new Date(lastData.time * 1000).toISOString()
+		setLastUpdatedTime(lastUpdate)
 
 		const candleSeries = chartRef.current.addSeries(CandlestickSeries, {
       upColor: '#4bffb5',
