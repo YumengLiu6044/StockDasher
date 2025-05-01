@@ -108,7 +108,7 @@ export default function StockPriceView({
 			const resizeObserver = new ResizeObserver(() => {
 				if (chartDivRef.current && chart) {
 					chart.applyOptions({
-						width: chartDivRef.current.clientWidth * 0.95,
+						width: chartDivRef.current.clientWidth,
 					});
 					chart.timeScale().fitContent();
 				}

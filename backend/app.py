@@ -123,11 +123,14 @@ async def getStockPrice(stock_request: GetStockPrice):
     formatted_base = ALPACA_URL.format(stock_request.symbol)
     result = requests.get(formatted_base, params=params, headers=alpaca_headers)
     if result.status_code != 200:
+
+        print(result.text)
         raise HTTPException(status_code=401, detail=result.text)
 
     results = result.json()
-    bars = results.get("bars") or ""
+    bars = results.get("bars") or []
     if not bars:
+        print(result.text)
         raise HTTPException(status_code=401, detail="No data found")
 
     page_token = results.get("next_page_token") or ""
@@ -135,6 +138,7 @@ async def getStockPrice(stock_request: GetStockPrice):
         params["page_token"] = page_token
         result = requests.get(formatted_base, params=params, headers=alpaca_headers)
         if result.status_code != 200:
+            print(result.text)
             raise HTTPException(status_code=401, detail=result.text)
 
         result = result.json()
