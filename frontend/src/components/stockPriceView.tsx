@@ -42,6 +42,11 @@ const Timeframes = [
 		durationMs: 365 * 24 * 60 * 60 * 1000,
 		aggregation: "1D",
 	},
+	{
+		label: "5Year",
+		durationMs: 5 * 365 * 24 * 60 * 60 * 1000,
+		aggregation: "1W"
+	}
 ];
 
 export default function StockPriceView({
@@ -183,7 +188,7 @@ export default function StockPriceView({
 				</div>
 			)}
 			{companyInView && (
-				<div className="w-full flex justify-between border-t-1 border-gray-300 pt-3">
+				<div className="w-full flex gap-3 border-t-1 border-gray-300 pt-3">
 					{Timeframes.map((item, index) => (
 						<span
 							className={`text-xs rounded-2xl px-2 py-0.5  border-1 border-gray-300 ${

@@ -17,7 +17,7 @@ interface SidebarProp {
 function Sidebar(prop: SidebarProp) {
 	return (
 		<div
-			className={`flex flex-col border-r border-gray-300 p-8 items-center gap-7 overflow-hidden transition-all duration-300`}
+			className={`hidden lg:flex flex-col border-r border-gray-300 p-8 items-center gap-7 overflow-hidden transition-all duration-300`}
 			style={{ width: prop.showSidebar ? "25rem" : "5rem" }}
 		>
 			<div className="flex gap-2 items-center transition-opacity duration-300">

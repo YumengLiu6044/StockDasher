@@ -113,7 +113,7 @@ export default function Dashboard({
 								</span>
 								{showSortOption && (
 									<div
-										className="w-full absolute flex flex-col bg-white border-1 border-gray-300 rounded-2xl overflow-clip"
+										className="w-full z-10 absolute flex flex-col bg-white border-1 border-gray-300 rounded-2xl overflow-clip"
 										ref={dropDownRef}
 									>
 										{dropDownOptions.map(
@@ -164,7 +164,7 @@ export default function Dashboard({
 								<div
 									key={index}
 									className={
-										"flex gap-2 hover:bg-gray-300 transition-all px-3 py-2" +
+										"fade-in flex gap-2 hover:bg-gray-300 transition-all px-3 py-2" +
 										(index > 0
 											? " border-t-1 border-gray-300 "
 											: "")

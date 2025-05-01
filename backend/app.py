@@ -126,7 +126,10 @@ async def getStockPrice(stock_request: GetStockPrice):
         raise HTTPException(status_code=401, detail=result.text)
 
     results = result.json()
-    bars = results["bars"]
+    bars = results.get("bars") or ""
+    if not bars:
+        raise HTTPException(status_code=401, detail="No data found")
+
     page_token = results.get("next_page_token") or ""
     while page_token:
         params["page_token"] = page_token
