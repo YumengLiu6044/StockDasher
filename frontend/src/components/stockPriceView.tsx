@@ -6,20 +6,19 @@ import {
 import { useRef, useEffect, useState } from "react";
 import {
 	createChart,
-	AreaSeries,
-	Time,
 	ColorType,
-	AreaData,
+	IChartApi,
+	CandlestickSeries,
+	CandlestickData,
 } from "lightweight-charts";
 import { LOGO_KEY } from "./trendingStockCard";
 import { getPrice } from "../utils/fetch";
 
 interface StockPriceViewProps {
 	companyInView: SavedCompanyInfo | null;
-	showCandle: boolean;
 }
-const date = new Date();
 function getCurrentTime() {
+	const date = new Date();
 	const hour = date.getHours();
 	const minutes = date.getMinutes();
 	const seconds = date.getSeconds();
@@ -47,14 +46,13 @@ const Timeframes = [
 
 export default function StockPriceView({
 	companyInView,
-	showCandle,
 }: StockPriceViewProps) {
 	const chartDivRef = useRef<HTMLDivElement | null>(null);
+	const chartRef = useRef<IChartApi | null>(null)
 	const [lastUpdatedTime, setLastUpdatedTime] = useState(getCurrentTime());
 	const [timeFrameIndex, setTimeFrameIndex] = useState(0);
 	const [candleData, setCandleData] = useState<GetPriceResponse | null>(null);
 
-	const [areaData, setAreaData] = useState<AreaData<Time>[]>([]);
 
 	useEffect(() => {
 		if (!companyInView) return;
@@ -62,8 +60,9 @@ export default function StockPriceView({
 		setLastUpdatedTime(getCurrentTime());
 
 		const timeInterval = Timeframes[timeFrameIndex].durationMs;
+		const date = new Date()
 		const startTime = new Date(date.getTime() - timeInterval).toISOString();
-
+		console.log(startTime)
 		const priceRequest: GetPriceRequest = {
 			symbol: companyInView.symbol,
 			timeframe: Timeframes[timeFrameIndex].aggregation,
@@ -75,16 +74,7 @@ export default function StockPriceView({
 	}, [companyInView, timeFrameIndex]);
 
 	useEffect(() => {
-		if (chartDivRef.current && candleData) {
-
-			const newAreaData = candleData.map((item, _) => ({
-				time: item.time,
-				value: item.close,
-			})) as AreaData<Time>[];
-			setAreaData(newAreaData);
-
-			console.log(newAreaData)
-
+		if (chartDivRef.current) {
 			const chart = createChart(chartDivRef.current, {
 				layout: {
 					textColor: "black",
@@ -108,16 +98,7 @@ export default function StockPriceView({
 				height: 400,
 			});
 
-			if (areaData && areaData.length > 0) {
-				const areaSeries = chart.addSeries(AreaSeries, {
-					lineColor: "#2962FF",
-					topColor: "#2962FF",
-					bottomColor: "rgba(41, 98, 255, 0.28)",
-				});
-
-				areaSeries.setData(areaData);
-			}
-			chart.timeScale().fitContent();
+			chartRef.current = chart
 
 			const resizeObserver = new ResizeObserver(() => {
 				if (chartDivRef.current && chart) {
@@ -134,7 +115,24 @@ export default function StockPriceView({
 				chart.remove(), resizeObserver.disconnect();
 			};
 		}
-	}, [candleData]);
+	}, []);
+
+	useEffect(() => {
+		if (!chartRef.current || !candleData) return
+
+		const candleSeries = chartRef.current.addSeries(CandlestickSeries, {
+      upColor: '#4bffb5',
+      downColor: '#ff4976',
+      borderDownColor: '#ff4976',
+      borderUpColor: '#4bffb5',
+      wickDownColor: '#838ca1',
+      wickUpColor: '#838ca1',
+    });
+		candleSeries.setData(candleData as CandlestickData[]);
+		chartRef.current.timeScale().fitContent();
+		
+		return () => chartRef.current?.removeSeries(candleSeries)
+	}, [candleData])
 
 	return (
 		<div className="w-full h-full min-h-100 bg-white border-1 border-gray-300 rounded-2xl p-5 flex flex-col gap-4">

@@ -100,7 +100,7 @@ export default function Dashboard({
 			<div className="flex flex-col lg:flex-row py-5 gap-5">
 				<StockPriceView
 					companyInView={stockInView}
-					showCandle={true}
+
 				></StockPriceView>
 				<div className="w-full lg:max-w-100 flex flex-col gap-3">
 					<div className="flex justify-between">

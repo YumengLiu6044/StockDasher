@@ -28,7 +28,7 @@ function Sidebar(prop: SidebarProp) {
 			</div>
 
 			{prop.showSidebar && (
-				<div className="hidden md:flex gradient-bg rounded-2xl text-white p-5 w-full items-center justify-between">
+				<div className="hidden lg:flex gradient-bg rounded-2xl text-white p-5 w-full items-center justify-between">
 					<div className="flex flex-col gap-2">
 						<span className="font-light">Total Investment</span>
 						<span className="text-2xl">$3219.62</span>
@@ -49,7 +49,7 @@ function Sidebar(prop: SidebarProp) {
 					{sidebarOptions.map((item, index) => (
 						<div
 							className={
-								"rounded-2xl hover:bg-gray-200 transition-all p-2 flex items-center gap-3 " +
+								"rounded-2xl hover:bg-gray-200 transition-all p-2 flex items-center lg:gap-3 " +
 								(!prop.showSidebar && "justify-center")
 							}
 							key={index}
@@ -57,7 +57,7 @@ function Sidebar(prop: SidebarProp) {
 							<i
 								className={`${item.iconName} font-medium text-xl`}
 							></i>
-							{prop.showSidebar && <span className="hidden md:flex">{item.name}</span>}
+							{prop.showSidebar && <span className="hidden lg:flex">{item.name}</span>}
 						</div>
 					))}
 				</div>
@@ -66,7 +66,7 @@ function Sidebar(prop: SidebarProp) {
 					{footerOptions.map((item, index) => (
 						<div
 							className={
-								"rounded-2xl hover:bg-gray-200 transition-all p-2 flex items-center gap-3 " +
+								"rounded-2xl hover:bg-gray-200 transition-all p-2 flex items-center lg:gap-3 " +
 								(!prop.showSidebar && "justify-center")
 							}
 							key={index}
@@ -74,7 +74,7 @@ function Sidebar(prop: SidebarProp) {
 							<i
 								className={`${item.iconName} font-medium text-xl`}
 							></i>
-							{prop.showSidebar && <span className="hidden md:flex">{item.name}</span>}
+							{prop.showSidebar && <span className="hidden lg:flex">{item.name}</span>}
 						</div>
 					))}
 				</div>
