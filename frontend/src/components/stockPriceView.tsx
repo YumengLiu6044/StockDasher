@@ -1,4 +1,8 @@
-import { GetPriceResponse, SavedCompanyInfo } from "../utils/types";
+import {
+	GetPriceRequest,
+	GetPriceResponse,
+	SavedCompanyInfo,
+} from "../utils/types";
 import { useRef, useEffect, useState } from "react";
 import {
 	createChart,
@@ -8,53 +12,79 @@ import {
 	AreaData,
 } from "lightweight-charts";
 import { LOGO_KEY } from "./trendingStockCard";
+import { getPrice } from "../utils/fetch";
 
 interface StockPriceViewProps {
-	candleData: GetPriceResponse | null;
 	companyInView: SavedCompanyInfo | null;
 	showCandle: boolean;
 }
-
+const date = new Date();
 function getCurrentTime() {
-	const date = new Date();
 	const hour = date.getHours();
 	const minutes = date.getMinutes();
 	const seconds = date.getSeconds();
 	return `${hour}:${minutes}:${seconds}`;
 }
 
-const TimeFrames = ["1 Day", "1 Week", "1 Month", "1 Year", "All"];
+const Timeframes = [
+	{
+		label: "1Day",
+		durationMs: 1 * 24 * 60 * 60 * 1000,
+		aggregation: "10Min",
+	},
+	{ label: "1Week", durationMs: 7 * 24 * 60 * 60 * 1000, aggregation: "1H" },
+	{
+		label: "1Month",
+		durationMs: 30 * 24 * 60 * 60 * 1000,
+		aggregation: "3H",
+	},
+	{
+		label: "12Month",
+		durationMs: 365 * 24 * 60 * 60 * 1000,
+		aggregation: "1D",
+	},
+];
 
 export default function StockPriceView({
-	candleData,
 	companyInView,
 	showCandle,
 }: StockPriceViewProps) {
 	const chartDivRef = useRef<HTMLDivElement | null>(null);
 	const [lastUpdatedTime, setLastUpdatedTime] = useState(getCurrentTime());
+	const [timeFrameIndex, setTimeFrameIndex] = useState(0);
+	const [candleData, setCandleData] = useState<GetPriceResponse | null>(null);
 
-	const [areaData, setAreaData] = useState<AreaData<Time>[]>(
-		candleData?.map((item) => ({
-			time: item.time,
-			value: item.close,
-		})) as AreaData<Time>[]
-	);
+	const [areaData, setAreaData] = useState<AreaData<Time>[]>([]);
 
 	useEffect(() => {
+		if (!companyInView) return;
+
 		setLastUpdatedTime(getCurrentTime());
-	}, [companyInView]);
+
+		const timeInterval = Timeframes[timeFrameIndex].durationMs;
+		const startTime = new Date(date.getTime() - timeInterval).toISOString();
+
+		const priceRequest: GetPriceRequest = {
+			symbol: companyInView.symbol,
+			timeframe: Timeframes[timeFrameIndex].aggregation,
+			start: startTime,
+		};
+		getPrice(priceRequest).then((data) => {
+			setCandleData(data);
+		});
+	}, [companyInView, timeFrameIndex]);
 
 	useEffect(() => {
-		if (chartDivRef.current) {
-			// Update areaData when candleData changes
-			setAreaData(
-				candleData?.map((item) => ({
-					time: item.time,
-					value: item.close,
-				})) as AreaData<Time>[]
-			);
+		if (chartDivRef.current && candleData) {
 
-			console.log("Calling");
+			const newAreaData = candleData.map((item, _) => ({
+				time: item.time,
+				value: item.close,
+			})) as AreaData<Time>[];
+			setAreaData(newAreaData);
+
+			console.log(newAreaData)
+
 			const chart = createChart(chartDivRef.current, {
 				layout: {
 					textColor: "black",
@@ -154,13 +184,23 @@ export default function StockPriceView({
 					</div>
 				</div>
 			)}
-			<div className="w-full flex justify-between border-t-1 border-gray-300 pt-3">
-				{TimeFrames.map((item, index) => (
-					<div className="text-xs rounded-2xl px-2 py-0.5 bg-white border-1 border-gray-300" key={index}>
-						{item}
-					</div>
-				))}
-			</div>
+			{companyInView && (
+				<div className="w-full flex justify-between border-t-1 border-gray-300 pt-3">
+					{Timeframes.map((item, index) => (
+						<span
+							className={`text-xs rounded-2xl px-2 py-0.5  border-1 border-gray-300 ${
+								index === timeFrameIndex
+									? "bg-black text-white"
+									: "bg-white hover:bg-gray-300"
+							} transition-all`}
+							key={index}
+							onClick={() => setTimeFrameIndex(index)}
+						>
+							{item.label}
+						</span>
+					))}
+				</div>
+			)}
 			<div ref={chartDivRef}></div>
 		</div>
 	);

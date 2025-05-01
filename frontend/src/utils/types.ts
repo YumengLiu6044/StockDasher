@@ -27,7 +27,6 @@ export type GetPriceRequest = {
 	symbol: string;
 	timeframe: string;
 	start: string;
-	end: string;
 };
 
 export type GetPriceResponse = {

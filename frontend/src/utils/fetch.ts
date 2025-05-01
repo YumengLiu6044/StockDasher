@@ -72,8 +72,8 @@ export async function getPrice(request: GetPriceRequest): Promise<GetPriceRespon
 			body: JSON.stringify(request),
 		});
 
-		const data = await response.json() as GetPriceResponse;
-		return data;
+		const data = await response.json();
+		return data.data as GetPriceResponse;
 	} catch (error) {
 		console.error(error);
 		return null;

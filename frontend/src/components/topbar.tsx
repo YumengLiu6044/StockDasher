@@ -42,7 +42,6 @@ export default function Topbar(prop: TopBarProp) {
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
-			console.log("Clicked")
 			if (searchResultRef.current) {
 				const rect = searchResultRef.current.getBoundingClientRect();
 				const clickedX = event.clientX;

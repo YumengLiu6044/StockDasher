@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import TrendingStockCard, { LOGO_KEY } from "./trendingStockCard";
 import { sampleTrendingStocks } from "../assets/sampleData";
 import StockPriceView from "./stockPriceView";
-import { SavedCompanyInfo, GetPriceResponse } from "../utils/types";
-import { getPrice } from "../utils/fetch";
+import { SavedCompanyInfo } from "../utils/types";
+
 
 interface DashboardProps {
 	savedStocks: SavedCompanyInfo[];
@@ -20,8 +20,7 @@ export default function Dashboard({
 	const [sortOptionIndex, setSortOptionIndex] = useState(0);
 	const [isSortIncrease, setIsSortIncrease] = useState(false);
 	const [showSortOption, setShowOption] = useState(false);
-	const [candleDataInView, setCandleDataInView] =
-		useState<GetPriceResponse | null>(null);
+	
 	const [stockInView, setStockInView] = useState<SavedCompanyInfo | null>(
 		null
 	);
@@ -101,7 +100,6 @@ export default function Dashboard({
 			<div className="flex flex-col lg:flex-row py-5 gap-5">
 				<StockPriceView
 					companyInView={stockInView}
-					candleData={candleDataInView}
 					showCandle={true}
 				></StockPriceView>
 				<div className="w-full lg:max-w-100 flex flex-col gap-3">

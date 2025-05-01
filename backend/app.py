@@ -10,7 +10,6 @@ import time
 import requests
 from datetime import datetime
 
-
 main.load_dotenv()
 # Finnhub setup
 FINNHUB_KEY = os.getenv("FINNHUB_API_KEY")
@@ -96,13 +95,16 @@ async def getCompanyQuote(request: SearchCompany):
 class GetStockPrice(BaseModel):
     symbol: str
     timeframe: str = "1D"
-    begin_time: str = None
-    end_time: str = None
+    start: str = None
 
 
-def format_entry(entry):
+def format_data(entry):
+    iso_time = entry["t"]
+    iso_time = iso_time.replace("Z", "+00:00")
+    dt = datetime.fromisoformat(iso_time)
+    dt = int(dt.timestamp())
     return {
-        "time": entry["t"],
+        "time": dt,
         "open": entry["o"],
         "close": entry["c"],
         "high": entry["h"],
@@ -114,8 +116,9 @@ async def getStockPrice(stock_request: GetStockPrice):
     controlled_sleep(0.3)
     params = {
         "timeframe": stock_request.timeframe,
-        "start": stock_request.begin_time,
-        "end": stock_request.end_time,
+        "start": stock_request.start,
+        "page_token": None,
+        "limit": 500
     }
     formatted_base = ALPACA_URL.format(stock_request.symbol)
     result = requests.get(formatted_base, params=params, headers=alpaca_headers)
@@ -124,9 +127,22 @@ async def getStockPrice(stock_request: GetStockPrice):
 
     results = result.json()
     bars = results["bars"]
+    page_token = results.get("next_page_token") or ""
+    while page_token:
+        params["page_token"] = page_token
+        result = requests.get(formatted_base, params=params, headers=alpaca_headers)
+        if result.status_code != 200:
+            raise HTTPException(status_code=401, detail=result.text)
 
-    formatted_data = [format_entry(i) for i in bars]
+        result = result.json()
+        page_token = result.get("next_page_token") or ""
+        if not result.get("bars"):
+            break
 
+        bars.extend(result["bars"])
+        controlled_sleep(0.1)
+
+    formatted_data = [format_data(entry) for entry in bars]
     return {"data": formatted_data}
 
 
