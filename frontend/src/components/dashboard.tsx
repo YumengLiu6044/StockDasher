@@ -122,7 +122,7 @@ export default function Dashboard({
 	return (
 		<div className="bg-gray-100 h-full w-full p-5" ref={divRef}>
 			<span className="text-xl">Trending Stocks</span>
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full overflow-scroll pt-5">
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full overflow-scroll pt-5 no-scrollbar">
 				{trendingStocks.length > 0 &&
 					trendingStocks.map((item, index) => (
 						<div
@@ -197,7 +197,7 @@ export default function Dashboard({
 					<div
 						className={`${
 							savedStocks.length > 0 ? "" : "min-h-40"
-						} bg-white border-1 border-gray-300 rounded-2xl flex flex-col overflow-scroll`}
+						} bg-white border-1 border-gray-300 rounded-2xl flex flex-col overflow-scroll no-scrollbar`}
 					>
 						{savedStocks.map((item, index) => {
 							return (
