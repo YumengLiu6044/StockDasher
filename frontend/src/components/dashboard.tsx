@@ -4,10 +4,11 @@ import { sampleTrendingStocks } from "../assets/sampleData";
 import StockPriceView from "./stockPriceView";
 import { SavedCompanyInfo } from "../utils/types";
 
-
 interface DashboardProps {
 	savedStocks: SavedCompanyInfo[];
 	setSavedStocks: React.Dispatch<React.SetStateAction<SavedCompanyInfo[]>>;
+	stockInView: SavedCompanyInfo | null,
+	setStockInView: React.Dispatch<React.SetStateAction<SavedCompanyInfo | null>>
 }
 
 const dropDownOptions = ["None", "Name", "Price", "Change"];
@@ -15,21 +16,20 @@ const dropDownOptions = ["None", "Name", "Price", "Change"];
 export default function Dashboard({
 	savedStocks,
 	setSavedStocks,
+	stockInView,
+	setStockInView
 }: DashboardProps) {
 	const divRef = useRef<HTMLDivElement | null>(null);
 	const [sortOptionIndex, setSortOptionIndex] = useState(0);
 	const [isSortIncrease, setIsSortIncrease] = useState(false);
 	const [showSortOption, setShowOption] = useState(false);
-	
-	const [stockInView, setStockInView] = useState<SavedCompanyInfo | null>(
-		null
-	);
+
+
 
 	const dropDownRef = useRef<HTMLDivElement | null>(null);
 
 	const handleClickSaved = (clickedSaved: SavedCompanyInfo) => {
 		setStockInView(clickedSaved);
-		
 	};
 
 	useEffect(() => {
@@ -98,10 +98,7 @@ export default function Dashboard({
 			</div>
 
 			<div className="flex flex-col lg:flex-row py-5 gap-5">
-				<StockPriceView
-					companyInView={stockInView}
-
-				></StockPriceView>
+				<StockPriceView companyInView={stockInView}></StockPriceView>
 				<div className="w-full lg:max-w-100 flex flex-col gap-3">
 					<div className="flex justify-between">
 						<span className="text-xl">Saved Stocks</span>

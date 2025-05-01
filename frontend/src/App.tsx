@@ -8,9 +8,11 @@ import { searchCompanyInfo } from "./utils/fetch";
 
 function App() {
 	const [showSideBar, setShowSideBar] = useState(true);
-	
 	const [isLoadingCompanyInfo, setIsLoadingCompanyInfo] = useState(false);
 	const [savedStocks, setSavedStocks] = useState<SavedCompanyInfo[]>([]);
+	const [stockInView, setStockInView] = useState<SavedCompanyInfo | null>(
+		null
+	);
 
 	const handleClickSearchResult = (clickedResult: StockSearchResult) => {
 		if (
@@ -26,6 +28,9 @@ function App() {
 		setIsLoadingCompanyInfo(true);
 		searchCompanyInfo(clickedResult).then((data) => {
 			if (data) {
+				if (savedStocks.length === 0) {
+					setStockInView(data)
+				}
 				setSavedStocks([...savedStocks, data]);
 			}
 			setIsLoadingCompanyInfo(false);
@@ -44,6 +49,8 @@ function App() {
 					}}
 				></Topbar>
 				<Dashboard
+				stockInView={stockInView}
+				setStockInView={setStockInView}
 					savedStocks={savedStocks}
 					setSavedStocks={setSavedStocks}
 				></Dashboard>
