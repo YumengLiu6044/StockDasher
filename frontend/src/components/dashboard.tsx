@@ -2,13 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import TrendingStockCard, { LOGO_KEY } from "./trendingStockCard";
 import StockPriceView from "./stockPriceView";
 import { SavedCompanyInfo, TrendingStock } from "../utils/types";
-import { getTopEarners } from "../utils/fetch";
+import { getInfoFromRecommendation, getTopEarners } from "../utils/fetch";
+import loading from "../assets/loading.svg"
 
 interface DashboardProps {
 	savedStocks: SavedCompanyInfo[];
 	setSavedStocks: React.Dispatch<React.SetStateAction<SavedCompanyInfo[]>>;
-	stockInView: SavedCompanyInfo | null,
-	setStockInView: React.Dispatch<React.SetStateAction<SavedCompanyInfo | null>>
+	stockInView: SavedCompanyInfo | null;
+	setStockInView: React.Dispatch<
+		React.SetStateAction<SavedCompanyInfo | null>
+	>;
+	isLoadingCompanyInfo: boolean;
+	setIsLoadingCompanyInfo: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const dropDownOptions = ["None", "Name", "Price", "Change"];
@@ -17,14 +22,15 @@ export default function Dashboard({
 	savedStocks,
 	setSavedStocks,
 	stockInView,
-	setStockInView
+	setStockInView,
+	isLoadingCompanyInfo,
+	setIsLoadingCompanyInfo,
 }: DashboardProps) {
 	const divRef = useRef<HTMLDivElement | null>(null);
 	const [sortOptionIndex, setSortOptionIndex] = useState(0);
 	const [isSortIncrease, setIsSortIncrease] = useState(false);
 	const [showSortOption, setShowOption] = useState(false);
-	const [trendingStocks, setTrendingStocks] = useState<TrendingStock[]>([])
-
+	const [trendingStocks, setTrendingStocks] = useState<TrendingStock[]>([]);
 
 	const dropDownRef = useRef<HTMLDivElement | null>(null);
 
@@ -32,11 +38,33 @@ export default function Dashboard({
 		setStockInView(clickedSaved);
 	};
 
+	const handleClickTrendingStock = (clickedStock: TrendingStock) => {
+		const cleanedSymbol = clickedStock.ticker.replace(/[^a-zA-Z0-9]/g, "");
+		if (savedStocks.map((item) => item.symbol).includes(cleanedSymbol)) {
+			console.log("Already contains");
+			return;
+		}
+
+		if (isLoadingCompanyInfo) return;
+		setIsLoadingCompanyInfo(true)
+
+		getInfoFromRecommendation(cleanedSymbol).then((newSavedInfo) => {
+			console.log(newSavedInfo);
+			if (newSavedInfo) {
+				if (savedStocks.length === 0) {
+					setStockInView(newSavedInfo)
+				}
+				setSavedStocks([...savedStocks, newSavedInfo]);
+			}
+			setIsLoadingCompanyInfo(false);
+		});
+	};
+
 	useEffect(() => {
 		if (divRef.current) {
 			getTopEarners().then((stocks) => {
-				setTrendingStocks(stocks ?? [])
-			})
+				setTrendingStocks(stocks ?? []);
+			});
 		}
 
 		const handleClickOutside = (event: MouseEvent) => {
@@ -97,7 +125,13 @@ export default function Dashboard({
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full overflow-scroll pt-5">
 				{trendingStocks.length > 0 &&
 					trendingStocks.map((item, index) => (
-						<div key={index} className="w-full">
+						<div
+							key={index}
+							className="w-full"
+							onClick={() =>
+								handleClickTrendingStock(trendingStocks[index])
+							}
+						>
 							<TrendingStockCard data={item}></TrendingStockCard>
 						</div>
 					))}
@@ -165,7 +199,10 @@ export default function Dashboard({
 							savedStocks.length > 0 ? "" : "min-h-40"
 						} bg-white border-1 border-gray-300 rounded-2xl flex flex-col overflow-scroll`}
 					>
-						{savedStocks.map((item, index) => {
+						{isLoadingCompanyInfo ? <div className="flex justify-center">
+
+							<img src={loading}></img>
+						</div> : savedStocks.map((item, index) => {
 							return (
 								<div
 									key={index}

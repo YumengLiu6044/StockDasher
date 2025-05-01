@@ -65,6 +65,17 @@ def controlled_sleep(min_time_delta=1.0):
 
     time_of_last_search = current_time
 
+
+@app.post("/getCompanyProfile")
+async def getCompanyProfile(request: SearchSymbol):
+    controlled_sleep()
+    try:
+        response = finnhub_client.company_profile2(symbol=request.query)
+    except FinnhubAPIException:
+        raise HTTPException(status_code=401, detail="Symbol not found")
+
+    return response
+
 @app.post("/searchSymbol")
 async def searchStockSymbol(request: SearchSymbol):
     controlled_sleep()

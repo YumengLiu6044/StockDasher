@@ -33,5 +33,10 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("top_gainers", response.json())
 
+    def test_company_profile(self):
+        response = requests.post(BACKEND_URL + "/getCompanyProfile", json={"query": "AAPL"})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("logo", response.json())
+
 if __name__ == '__main__':
     unittest.main()

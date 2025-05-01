@@ -95,3 +95,34 @@ export async function getTopEarners() : Promise<TrendingStock[] | null> {
 		return null;
 	}
 }
+
+export async function getInfoFromRecommendation(symbol:string): Promise<SavedCompanyInfo | null> {
+	try {
+		const response = await fetch(BACKEND_URL + "/getCompanyProfile", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({query: symbol}),
+		});
+
+		const data = await response.json();
+		console.log(data)
+
+		if (JSON.stringify(data) === "{}") {
+			return null
+		}
+
+		const infoRequest: StockSearchResult = {
+			symbol: data["ticker"],
+			displaySymbol: data["name"],
+			type: data["Common"],
+			description: data["name"]
+		}
+
+		return await searchCompanyInfo(infoRequest)
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}

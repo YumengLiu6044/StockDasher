@@ -49,6 +49,8 @@ function App() {
 					}}
 				></Topbar>
 				<Dashboard
+				isLoadingCompanyInfo={isLoadingCompanyInfo}
+				setIsLoadingCompanyInfo={setIsLoadingCompanyInfo}
 				stockInView={stockInView}
 				setStockInView={setStockInView}
 					savedStocks={savedStocks}
