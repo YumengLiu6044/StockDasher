@@ -172,13 +172,21 @@ async def getStockPrice():
     global cached_result, last_earner_update
     current_time = time.time()
     if cached_result and current_time - last_earner_update < 3600 * 12:
+        print("Using cached result")
         return cached_result
     else:
+        print("Retrieving live data")
         last_earner_update = current_time
 
     query_format = f"function=TOP_GAINERS_LOSERS&apikey={ALPHA_V_KEY}"
     full_url = ALPHA_V_URL + "?" + query_format
     result = requests.get(full_url)
+
+    if result.status_code != 200:
+        cached_result = None
+        last_earner_update = current_time
+        raise HTTPException(status_code=401, detail=result.text)
+        
     cached_result = result.json()
     return result.json()
 
