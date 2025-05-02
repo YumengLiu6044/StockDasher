@@ -39,7 +39,7 @@
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/stock-dasher.git
+git clone https://github.com/YumengLiu6044/StockDasher.git
 cd stock-dasher
 ```
 
