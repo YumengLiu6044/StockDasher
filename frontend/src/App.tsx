@@ -28,9 +28,7 @@ function App() {
 		setIsLoadingCompanyInfo(true);
 		searchCompanyInfo(clickedResult).then((data) => {
 			if (data) {
-				if (savedStocks.length === 0) {
-					setStockInView(data)
-				}
+				setStockInView(data)
 				setSavedStocks([...savedStocks, data]);
 			}
 			setIsLoadingCompanyInfo(false);
