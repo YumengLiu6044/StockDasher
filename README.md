@@ -40,7 +40,7 @@
 
 ```bash
 git clone https://github.com/YumengLiu6044/StockDasher.git
-cd stock-dasher
+cd StockDasher
 ```
 
 ### 2. Run the backend
