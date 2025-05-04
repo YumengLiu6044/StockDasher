@@ -83,7 +83,7 @@ export async function getPrice(request: GetPriceRequest): Promise<GetPriceRespon
 
 export async function getTopEarners() : Promise<TrendingStock[] | null> {
 	try {
-		const response = await fetch(BACKEND_URL + "/getTopEearners", {
+		const response = await fetch(BACKEND_URL + "/getTopEarners", {
 			method: "GET"
 		});
 

@@ -167,8 +167,8 @@ async def getStockPrice(stock_request: GetStockPrice):
 cached_result = None
 last_earner_update = time.time()
 
-@app.get("/getTopEearners")
-async def getStockPrice():
+@app.get("/getTopEarners")
+async def getTopEarners():
     global cached_result, last_earner_update
     current_time = time.time()
     if cached_result and current_time - last_earner_update < 3600 * 12:
@@ -181,7 +181,7 @@ async def getStockPrice():
     query_format = f"function=TOP_GAINERS_LOSERS&apikey={ALPHA_V_KEY}"
     full_url = ALPHA_V_URL + "?" + query_format
     result = requests.get(full_url)
-    
+
     if result.status_code != 200 or "top_gainers" not in result.json():
         cached_result = None
         last_earner_update = current_time

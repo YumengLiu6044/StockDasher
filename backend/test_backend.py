@@ -18,7 +18,7 @@ class MyTestCase(unittest.TestCase):
     def test_get_stock_price(self):
         response = requests.post(
             BACKEND_URL + "/getStockPrice",
-            json={"symbol": "AAPL", "timeframe": "1D", "begin_time": "2021-01-01", "end_time": "2021-01-08"}
+            json={"symbol": "AAPL", "timeframe": "1D", "start": "2021-01-01"}
         )
         self.assertEqual(response.status_code, 200)
         self.assertIn("data", response.json())
@@ -29,7 +29,7 @@ class MyTestCase(unittest.TestCase):
         self.assertIn("pc", response.json())
 
     def test_get_top_earners(self):
-        response = requests.get(BACKEND_URL + "/getTopEearners")
+        response = requests.get(BACKEND_URL + "/getTopEarners")
         self.assertEqual(response.status_code, 200)
         self.assertIn("top_gainers", response.json())
 
