@@ -65,7 +65,7 @@ export async function searchCompanyInfo(
 
 export async function getPrice(request: GetPriceRequest): Promise<GetPriceResponse | null> {
 	try {
-		console.log(request)
+
 		const response = await fetch(BACKEND_URL + "/getStockPrice", {
 			method: "POST",
 			headers: {
@@ -108,7 +108,7 @@ export async function getInfoFromRecommendation(symbol:string): Promise<SavedCom
 		});
 
 		const data = await response.json();
-		console.log(data)
+
 
 		if (JSON.stringify(data) === "{}") {
 			return null

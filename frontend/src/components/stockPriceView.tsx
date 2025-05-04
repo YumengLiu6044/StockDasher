@@ -57,10 +57,17 @@ export default function StockPriceView({
 
 		const timeInterval = Timeframes[timeFrameIndex].durationMs;
 		const date = new Date()
-		console.log(date.getTimezoneOffset())
-		const offsetMinutes = date.getTimezoneOffset();
-		const startTime = new Date(date.getTime() - offsetMinutes * 60 * 1000 - timeInterval).toISOString();
-		console.log(startTime)
+		const currentDay = date.getDay()
+
+		// Adjusts query start time to be no later than Thursday
+		let dayOffset = 0
+		if (currentDay > 4) {
+			dayOffset = (currentDay - 5) * 24 * 3600 * 1000
+		}
+		// Time zone adjustments
+		const offsetMiliseconds = date.getTimezoneOffset() * 60 * 1000;
+
+		const startTime = new Date(date.getTime() - offsetMiliseconds - dayOffset - timeInterval).toISOString();
 		const priceRequest: GetPriceRequest = {
 			symbol: companyInView.symbol,
 			timeframe: Timeframes[timeFrameIndex].aggregation,

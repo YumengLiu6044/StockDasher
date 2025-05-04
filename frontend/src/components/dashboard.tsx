@@ -49,7 +49,7 @@ export default function Dashboard({
 		setIsLoadingCompanyInfo(true);
 
 		getInfoFromRecommendation(cleanedSymbol).then((newSavedInfo) => {
-			console.log(newSavedInfo);
+
 			if (newSavedInfo) {
 				setStockInView(newSavedInfo);
 				setSavedStocks([...savedStocks, newSavedInfo]);
