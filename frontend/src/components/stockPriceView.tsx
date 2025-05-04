@@ -64,10 +64,15 @@ export default function StockPriceView({
 		if (currentDay > 4) {
 			dayOffset = (currentDay - 5) * 24 * 3600 * 1000
 		}
+		else if (currentDay === 0) {
+			dayOffset = 2 * 24 * 3600 * 1000
+		}
+
 		// Time zone adjustments
 		const offsetMiliseconds = date.getTimezoneOffset() * 60 * 1000;
 
 		const startTime = new Date(date.getTime() - offsetMiliseconds - dayOffset - timeInterval).toISOString();
+
 		const priceRequest: GetPriceRequest = {
 			symbol: companyInView.symbol,
 			timeframe: Timeframes[timeFrameIndex].aggregation,
