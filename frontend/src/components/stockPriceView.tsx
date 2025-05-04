@@ -57,7 +57,9 @@ export default function StockPriceView({
 
 		const timeInterval = Timeframes[timeFrameIndex].durationMs;
 		const date = new Date()
-		const startTime = new Date(date.getTime() - timeInterval).toISOString();
+		console.log(date.getTimezoneOffset())
+		const offsetMinutes = date.getTimezoneOffset();
+		const startTime = new Date(date.getTime() - offsetMinutes * 60 * 1000 - timeInterval).toISOString();
 		console.log(startTime)
 		const priceRequest: GetPriceRequest = {
 			symbol: companyInView.symbol,
