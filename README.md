@@ -39,8 +39,8 @@
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/stock-dasher.git
-cd stock-dasher
+git clone https://github.com/YumengLiu6044/StockDasher.git
+cd StockDasher
 ```
 
 ### 2. Run the backend
