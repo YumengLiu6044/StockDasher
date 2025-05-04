@@ -171,7 +171,7 @@ last_earner_update = time.time()
 async def getTopEarners():
     global cached_result, last_earner_update
     current_time = time.time()
-    if cached_result and current_time - last_earner_update < 3600 * 12:
+    if cached_result and current_time - last_earner_update < 3600 * 24:
         print("Using cached result")
         return cached_result
     else:
@@ -184,7 +184,6 @@ async def getTopEarners():
 
     if result.status_code != 200 or "top_gainers" not in result.json():
         cached_result = None
-        last_earner_update = current_time
         raise HTTPException(status_code=401, detail=result.text)
 
     cached_result = result.json()
