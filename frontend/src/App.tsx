@@ -27,6 +27,7 @@ function App() {
 
 	const notifyFailedSave = () => toast.error("Failed to add to saved stocks", {hideProgressBar: true, autoClose: 1000})
 	const notifySuccessfulSave = () => toast.success("Added to saved company", {hideProgressBar: true, autoClose: 1000})
+	const notifyFailedToGetTrending = () => toast.error("Failed to get trending stocks", {hideProgressBar: true, autoClose: 1000})
 
 	const handleNewSavedCompany = (data: SavedCompanyInfo | null) => {
 		if (data) {
@@ -71,6 +72,10 @@ function App() {
 		if (divRef.current) {
 			getTopEarners().then((stocks) => {
 				setTrendingStocks(stocks ?? []);
+
+				if (!stocks) {
+					notifyFailedToGetTrending()
+				}
 			});
 		}
 	}, []);
@@ -78,7 +83,6 @@ function App() {
 	return (
 		<div className="min-h-screen flex" ref={divRef}>
 			<Sidebar showSidebar={showSideBar}></Sidebar>
-
 			<div className="flex flex-col w-full">
 				<ToastContainer></ToastContainer>
 				<Topbar
