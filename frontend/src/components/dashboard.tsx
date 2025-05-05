@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import TrendingStockCard, { LOGO_KEY } from "./trendingStockCard";
 import StockPriceView from "./stockPriceView";
 import { SavedCompanyInfo, TrendingStock } from "../utils/types";
-import { getInfoFromRecommendation, getTopEarners } from "../utils/fetch";
 import loading from "../assets/loading.svg";
 
 interface DashboardProps {
+	trendingStocks: TrendingStock[];
+	handleClickTrendingStock: (trendingStock: TrendingStock) => void;
 	savedStocks: SavedCompanyInfo[];
 	setSavedStocks: React.Dispatch<React.SetStateAction<SavedCompanyInfo[]>>;
 	stockInView: SavedCompanyInfo | null;
@@ -21,16 +22,16 @@ const dropDownOptions = ["None", "Name", "Price", "Change"];
 export default function Dashboard({
 	savedStocks,
 	setSavedStocks,
+	trendingStocks,
+	handleClickTrendingStock,
 	stockInView,
 	setStockInView,
 	isLoadingCompanyInfo,
-	setIsLoadingCompanyInfo,
 }: DashboardProps) {
 	const divRef = useRef<HTMLDivElement | null>(null);
 	const [sortOptionIndex, setSortOptionIndex] = useState(0);
 	const [isSortIncrease, setIsSortIncrease] = useState(false);
 	const [showSortOption, setShowOption] = useState(false);
-	const [trendingStocks, setTrendingStocks] = useState<TrendingStock[]>([]);
 
 	const dropDownRef = useRef<HTMLDivElement | null>(null);
 
@@ -38,33 +39,7 @@ export default function Dashboard({
 		setStockInView(clickedSaved);
 	};
 
-	const handleClickTrendingStock = (clickedStock: TrendingStock) => {
-		const cleanedSymbol = clickedStock.ticker.replace(/[^a-zA-Z0-9]/g, "");
-		if (savedStocks.map((item) => item.symbol).includes(cleanedSymbol)) {
-			console.log("Already contains");
-			return;
-		}
-
-		if (isLoadingCompanyInfo) return;
-		setIsLoadingCompanyInfo(true);
-
-		getInfoFromRecommendation(cleanedSymbol).then((newSavedInfo) => {
-
-			if (newSavedInfo) {
-				setStockInView(newSavedInfo);
-				setSavedStocks([...savedStocks, newSavedInfo]);
-			}
-			setIsLoadingCompanyInfo(false);
-		});
-	};
-
 	useEffect(() => {
-		if (divRef.current) {
-			getTopEarners().then((stocks) => {
-				setTrendingStocks(stocks ?? []);
-			});
-		}
-
 		const handleClickOutside = (event: MouseEvent) => {
 			if (dropDownRef.current) {
 				const rect = dropDownRef.current.getBoundingClientRect();
