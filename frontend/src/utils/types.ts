@@ -24,14 +24,13 @@ export type SavedCompanyInfo = {
 };
 
 export type SavedCompanyInfoStore = {
-	company: SavedCompanyInfo | null
-	setCompany: (newCompany: SavedCompanyInfo) => void
-}
-
-export type SavedCompanyInfoArrayStore = {
 	companies: SavedCompanyInfo[];
-	setCompanies: (newCompanies: SavedCompanyInfo[]) => void;
+	companyInView: SavedCompanyInfo | null;
+	isLoading: boolean;
+	setIsLoading: (newState: boolean) => void;
+	setCompanyInView: (newCompany: SavedCompanyInfo) => void;
 	appendCompany: (newCompany: SavedCompanyInfo) => void;
+	handleNewSavedCompany: (newCompany: SavedCompanyInfo | null) => void;
 };
 
 export type GetPriceRequest = {
@@ -60,8 +59,3 @@ export type TrendingStockArrayStore = {
 	stocks: TrendingStock[];
 	setStocks: (newStocks: TrendingStock[]) => void;
 };
-
-export type IsLoadingCompanyStore = {
-	isLoading: boolean
-	setIsLoading: (newState: boolean) => void
-}

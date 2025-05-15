@@ -1,41 +1,53 @@
 import { create } from "zustand";
 import {
-	SavedCompanyInfoStore,
-	SavedCompanyInfoArrayStore,
 	SavedCompanyInfo,
-  TrendingStockArrayStore,
-  TrendingStock,
-  IsLoadingCompanyStore,
+	TrendingStockArrayStore,
+	TrendingStock,
+	SavedCompanyInfoStore,
 } from "./types";
+import { toast } from "react-toastify";
 
-export const useSavedStocksStore = create<SavedCompanyInfoArrayStore>(
-	(set) => ({
+const notifyFailedSave = () =>
+	toast.error("Failed to add to saved stocks", {
+		hideProgressBar: true,
+		autoClose: 1000,
+	});
+const notifySuccessfulSave = () =>
+	toast.success("Added to saved company", {
+		hideProgressBar: true,
+		autoClose: 1000,
+	});
+
+export const useSavedStocksStore = create<SavedCompanyInfoStore>(
+	(set, get) => ({
+		isLoading: false,
+		companyInView: null,
+		setCompanyInView: (newCompany: SavedCompanyInfo) =>
+			set(() => ({ companyInView: newCompany })),
+		setIsLoading: (newState: boolean) =>
+			set(() => ({ isLoading: newState })),
 		companies: [],
-		setCompanies: (newCompanies: SavedCompanyInfo[]) =>
-			set(() => ({
-				companies: newCompanies,
-			})),
 		appendCompany: (newCompany: SavedCompanyInfo) =>
-			set((state) => ({
-				companies: [...state.companies, newCompany],
-			})),
+			set((state) => ({ companies: [...state.companies, newCompany] })),
+		handleNewSavedCompany: (data: SavedCompanyInfo | null) => {
+			const { setCompanyInView, setIsLoading, appendCompany } = get();
+
+			if (data) {
+				setCompanyInView(data);
+				appendCompany(data);
+				notifySuccessfulSave();
+			} else {
+				notifyFailedSave();
+			}
+			setIsLoading(false);
+		},
 	})
 );
 
-export const useStockInViewStore = create<SavedCompanyInfoStore>((set) => ({
-	company: null,
-	setCompany: (newCompany: SavedCompanyInfo) =>
-		set((_) => ({
-			company: newCompany,
-		})),
-}));
-
-export const useTrendingStockArrayStore = create<TrendingStockArrayStore>((set) => ({
-  stocks: [],
-  setStocks: (newStocks: TrendingStock[]) => set(() => ({stocks: newStocks}))
-}))
-
-export const useIsLoadingCompanyStore = create<IsLoadingCompanyStore>((set) => ({
-  isLoading: false,
-  setIsLoading: (newState: boolean) => set(() => ({isLoading: newState}))
-}))
+export const useTrendingStockArrayStore = create<TrendingStockArrayStore>(
+	(set) => ({
+		stocks: [],
+		setStocks: (newStocks: TrendingStock[]) =>
+			set(() => ({ stocks: newStocks })),
+	})
+);

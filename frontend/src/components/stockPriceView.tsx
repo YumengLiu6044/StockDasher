@@ -1,7 +1,6 @@
 import {
 	GetPriceRequest,
 	GetPriceResponse,
-
 } from "../utils/types";
 import { useRef, useEffect, useState } from "react";
 import {
@@ -13,7 +12,7 @@ import {
 } from "lightweight-charts";
 import { LOGO_KEY } from "./trendingStockCard";
 import { getPrice } from "../utils/fetch";
-import { useStockInViewStore } from "../utils/store";
+import { useSavedStocksStore } from "../utils/store";
 
 
 const Timeframes = [
@@ -47,7 +46,8 @@ export default function StockPriceView() {
 	const [timeFrameIndex, setTimeFrameIndex] = useState(0);
 	const [candleData, setCandleData] = useState<GetPriceResponse | null>(null);
 
-	const stockInView = useStockInViewStore((state) => state.company)
+	const stockInView = useSavedStocksStore((state) => state.companyInView)
+
 	useEffect(() => {
 		if (!stockInView) return;
 

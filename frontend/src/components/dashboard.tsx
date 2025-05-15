@@ -1,9 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import TrendingStockCard, { LOGO_KEY } from "./trendingStockCard";
 import StockPriceView from "./stockPriceView";
-import { SavedCompanyInfo, TrendingStock } from "../utils/types";
+import { TrendingStock } from "../utils/types";
 import loading from "../assets/loading.svg";
-import { useIsLoadingCompanyStore, useSavedStocksStore, useStockInViewStore, useTrendingStockArrayStore } from "../utils/store";
+import {
+	useSavedStocksStore,
+	useTrendingStockArrayStore,
+} from "../utils/store";
 
 interface DashboardProps {
 	handleClickTrendingStock: (trendingStock: TrendingStock) => void;
@@ -19,15 +22,15 @@ export default function Dashboard({
 	const [isSortIncrease, setIsSortIncrease] = useState(false);
 	const [showSortOption, setShowOption] = useState(false);
 
-	const savedStocks = useSavedStocksStore((state) => state.companies)
-	const setSavedStocks = useSavedStocksStore((state) => state.setCompanies)
+	const savedStocks = useSavedStocksStore((state) => state.companies);
+	const isLoadingCompanyInfo = useSavedStocksStore(
+		(state) => state.isLoading
+	);
+	const setStockInView = useSavedStocksStore(
+		(state) => state.setCompanyInView
+	);
 
-	const trendingStocks = useTrendingStockArrayStore((state) => state.stocks)
-
-	const setStockInView = useStockInViewStore((state) => state.setCompany)
-
-	const isLoadingCompanyInfo = useIsLoadingCompanyStore((state) => state.isLoading)
-
+	const trendingStocks = useTrendingStockArrayStore((state) => state.stocks);
 	const dropDownRef = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
@@ -53,35 +56,30 @@ export default function Dashboard({
 		};
 	}, []);
 
-	useEffect(() => {
+	const sortedStocks = useMemo(() => {
+		console.log("Sorting");
 		const sortOption = dropDownOptions[sortOptionIndex];
-		if (sortOption === "None") {
-			return;
-		}
-		let sortedArray: SavedCompanyInfo[] = Array.from(savedStocks);
+		if (sortOption === "None") return savedStocks;
+
+		const sortedArray = [...savedStocks];
 		switch (sortOption) {
 			case "Name":
 				sortedArray.sort((a, b) =>
 					a.description.localeCompare(b.description)
 				);
 				break;
-
 			case "Price":
 				sortedArray.sort((a, b) => b.price - a.price);
 				break;
-
 			case "Change":
 				sortedArray.sort((a, b) => b.change_percent - a.change_percent);
-				break;
-
-			default:
 				break;
 		}
 		if (isSortIncrease) {
 			sortedArray.reverse();
 		}
-		setSavedStocks(sortedArray);
-	}, [sortOptionIndex, isSortIncrease]);
+		return sortedArray;
+	}, [savedStocks, sortOptionIndex, isSortIncrease]);
 
 	return (
 		<div className="bg-gray-100 h-full w-full p-5" ref={divRef}>
@@ -163,7 +161,7 @@ export default function Dashboard({
 							savedStocks.length > 0 ? "" : "min-h-40"
 						} bg-white border-1 border-gray-300 rounded-2xl flex flex-col overflow-scroll no-scrollbar`}
 					>
-						{savedStocks.map((item, index) => {
+						{sortedStocks.map((item, index) => {
 							return (
 								<div
 									key={index}

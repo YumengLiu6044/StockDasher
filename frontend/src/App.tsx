@@ -3,61 +3,33 @@ import Sidebar from "./components/sidebar";
 import Topbar from "./components/topbar";
 import Dashboard from "./components/dashboard";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import {
-	StockSearchResult,
-	SavedCompanyInfo,
-	TrendingStock,
-} from "./utils/types";
+import { StockSearchResult, TrendingStock } from "./utils/types";
 import {
 	searchCompanyInfo,
 	getInfoFromRecommendation,
 	getTopEarners,
 } from "./utils/fetch";
-import { ToastContainer, toast } from "react-toastify";
-import { useIsLoadingCompanyStore, useSavedStocksStore, useStockInViewStore, useTrendingStockArrayStore } from "./utils/store";
+import { toast, ToastContainer } from "react-toastify";
+import { useSavedStocksStore, useTrendingStockArrayStore } from "./utils/store";
 
 function App() {
 	const divRef = useRef<HTMLDivElement | null>(null);
 	const [showSideBar, setShowSideBar] = useState(true);
-	
-	const isLoadingCompanyInfo = useIsLoadingCompanyStore((state) => state.isLoading)
-	const setIsLoadingCompanyInfo = useIsLoadingCompanyStore((state) => state.setIsLoading)
 
-	const savedStocks = useSavedStocksStore((state) => state.companies);
-	const appendSavedStocks = useSavedStocksStore(
-		(state) => state.appendCompany
-	);
+const savedStocks = useSavedStocksStore((state) => state.companies);
+const isLoadingCompanyInfo = useSavedStocksStore((state) => state.isLoading);
+const setIsLoadingCompanyInfo = useSavedStocksStore((state) => state.setIsLoading)
+const handleNewSavedCompany = useSavedStocksStore((state) => state.handleNewSavedCompany)
 
-	const setTrendingStocks = useTrendingStockArrayStore((state) => state.setStocks)
-	
-	const setStockInView = useStockInViewStore((state) => state.setCompany)
-
-	const notifyFailedSave = () =>
-		toast.error("Failed to add to saved stocks", {
-			hideProgressBar: true,
-			autoClose: 1000,
-		});
-	const notifySuccessfulSave = () =>
-		toast.success("Added to saved company", {
-			hideProgressBar: true,
-			autoClose: 1000,
-		});
 	const notifyFailedToGetTrending = () =>
 		toast.error("Failed to get trending stocks", {
 			hideProgressBar: true,
 			autoClose: 1000,
 		});
 
-	const handleNewSavedCompany = (data: SavedCompanyInfo | null) => {
-		if (data) {
-			setStockInView(data);
-			appendSavedStocks(data);
-			notifySuccessfulSave();
-		} else {
-			notifyFailedSave();
-		}
-		setIsLoadingCompanyInfo(false);
-	};
+	const setTrendingStocks = useTrendingStockArrayStore(
+		(state) => state.setStocks
+	);
 
 	const handleClickSearchResult = (clickedResult: StockSearchResult) => {
 		if (
