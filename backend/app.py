@@ -184,6 +184,7 @@ async def getTopEarners():
 
     if result.status_code != 200 or "top_gainers" not in result.json():
         cached_result = None
+        print(result.text)
         raise HTTPException(status_code=401, detail=result.text)
 
     cached_result = result.json()
