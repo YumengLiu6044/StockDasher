@@ -1,7 +1,7 @@
 import {
 	GetPriceRequest,
 	GetPriceResponse,
-	SavedCompanyInfo,
+
 } from "../utils/types";
 import { useRef, useEffect, useState } from "react";
 import {
@@ -13,10 +13,8 @@ import {
 } from "lightweight-charts";
 import { LOGO_KEY } from "./trendingStockCard";
 import { getPrice } from "../utils/fetch";
+import { useStockInViewStore } from "../utils/store";
 
-interface StockPriceViewProps {
-	companyInView: SavedCompanyInfo | null;
-}
 
 const Timeframes = [
 	{
@@ -42,18 +40,16 @@ const Timeframes = [
 	}
 ];
 
-export default function StockPriceView({
-	companyInView,
-}: StockPriceViewProps) {
+export default function StockPriceView() {
 	const chartDivRef = useRef<HTMLDivElement | null>(null);
 	const chartRef = useRef<IChartApi | null>(null)
 	const [lastUpdatedTime, setLastUpdatedTime] = useState("");
 	const [timeFrameIndex, setTimeFrameIndex] = useState(0);
 	const [candleData, setCandleData] = useState<GetPriceResponse | null>(null);
 
-
+	const stockInView = useStockInViewStore((state) => state.company)
 	useEffect(() => {
-		if (!companyInView) return;
+		if (!stockInView) return;
 
 		const timeInterval = Timeframes[timeFrameIndex].durationMs;
 		const date = new Date()
@@ -74,14 +70,14 @@ export default function StockPriceView({
 		const startTime = new Date(date.getTime() - offsetMiliseconds - dayOffset - timeInterval).toISOString();
 
 		const priceRequest: GetPriceRequest = {
-			symbol: companyInView.symbol,
+			symbol: stockInView.symbol,
 			timeframe: Timeframes[timeFrameIndex].aggregation,
 			start: startTime,
 		};
 		getPrice(priceRequest).then((data) => {
 			setCandleData(data);
 		});
-	}, [companyInView, timeFrameIndex]);
+	}, [stockInView, timeFrameIndex]);
 
 	useEffect(() => {
 		if (chartDivRef.current) {
@@ -150,19 +146,19 @@ export default function StockPriceView({
 
 	return (
 		<div className="col-span-1 lg:col-span-2 min-h-100 bg-white border-1 border-gray-300 rounded-2xl p-5 flex flex-col gap-4">
-			{companyInView && (
+			{stockInView && (
 				<div className="flex justify-between">
 					<div className="flex gap-2">
 						<img
 							className="col-span-1 row-span-2 aspect-square w-12 h-12 rounded-full border-1 border-gray-200"
-							src={`https://img.logo.dev/ticker/${companyInView?.symbol}?token=${LOGO_KEY}`}
+							src={`https://img.logo.dev/ticker/${stockInView?.symbol}?token=${LOGO_KEY}`}
 						></img>
 						<div className="flex flex-col">
 							<span className="text-lg font-medium">
-								{companyInView?.description}
+								{stockInView?.description}
 							</span>
 							<span className="text-gray-500">
-								{companyInView?.symbol}
+								{stockInView?.symbol}
 							</span>
 						</div>
 					</div>
@@ -171,23 +167,23 @@ export default function StockPriceView({
 						<div className="flex gap-3 justify-end items-center">
 							<span
 								className={`text-xs text-white rounded-2xl px-2 py-0.5 ${
-									companyInView.change_percent > 0
+									stockInView.change_percent > 0
 										? "bg-green-500"
 										: "bg-red-500"
 								}`}
 							>
-								{companyInView.change_percent > 0 ? "+" : ""}
-								{companyInView.change_percent.toFixed(2)}%
+								{stockInView.change_percent > 0 ? "+" : ""}
+								{stockInView.change_percent.toFixed(2)}%
 								<i
 									className={`bi ${
-										companyInView.change_percent > 0
+										stockInView.change_percent > 0
 											? "bi-arrow-up"
 											: "bi-arrow-down"
 									} text-white`}
 								></i>
 							</span>
 							<span className="text-lg">
-								${companyInView.price}
+								${stockInView.price}
 							</span>
 						</div>
 						<span className="text-gray-400">
@@ -196,7 +192,7 @@ export default function StockPriceView({
 					</div>
 				</div>
 			)}
-			{companyInView && (
+			{stockInView && (
 				<div className="w-full flex gap-3 border-t-1 border-gray-300 pt-3">
 					{Timeframes.map((item, index) => (
 						<span

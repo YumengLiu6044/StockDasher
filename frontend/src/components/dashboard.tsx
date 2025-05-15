@@ -3,41 +3,32 @@ import TrendingStockCard, { LOGO_KEY } from "./trendingStockCard";
 import StockPriceView from "./stockPriceView";
 import { SavedCompanyInfo, TrendingStock } from "../utils/types";
 import loading from "../assets/loading.svg";
+import { useIsLoadingCompanyStore, useSavedStocksStore, useStockInViewStore, useTrendingStockArrayStore } from "../utils/store";
 
 interface DashboardProps {
-	trendingStocks: TrendingStock[];
 	handleClickTrendingStock: (trendingStock: TrendingStock) => void;
-	savedStocks: SavedCompanyInfo[];
-	setSavedStocks: React.Dispatch<React.SetStateAction<SavedCompanyInfo[]>>;
-	stockInView: SavedCompanyInfo | null;
-	setStockInView: React.Dispatch<
-		React.SetStateAction<SavedCompanyInfo | null>
-	>;
-	isLoadingCompanyInfo: boolean;
-	setIsLoadingCompanyInfo: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const dropDownOptions = ["None", "Name", "Price", "Change"];
 
 export default function Dashboard({
-	savedStocks,
-	setSavedStocks,
-	trendingStocks,
 	handleClickTrendingStock,
-	stockInView,
-	setStockInView,
-	isLoadingCompanyInfo,
 }: DashboardProps) {
 	const divRef = useRef<HTMLDivElement | null>(null);
 	const [sortOptionIndex, setSortOptionIndex] = useState(0);
 	const [isSortIncrease, setIsSortIncrease] = useState(false);
 	const [showSortOption, setShowOption] = useState(false);
 
-	const dropDownRef = useRef<HTMLDivElement | null>(null);
+	const savedStocks = useSavedStocksStore((state) => state.companies)
+	const setSavedStocks = useSavedStocksStore((state) => state.setCompanies)
 
-	const handleClickSaved = (clickedSaved: SavedCompanyInfo) => {
-		setStockInView(clickedSaved);
-	};
+	const trendingStocks = useTrendingStockArrayStore((state) => state.stocks)
+
+	const setStockInView = useStockInViewStore((state) => state.setCompany)
+
+	const isLoadingCompanyInfo = useIsLoadingCompanyStore((state) => state.isLoading)
+
+	const dropDownRef = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -111,7 +102,7 @@ export default function Dashboard({
 			</div>
 
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 py-5 gap-5">
-				<StockPriceView companyInView={stockInView}></StockPriceView>
+				<StockPriceView></StockPriceView>
 				<div className="w-full flex flex-col gap-3">
 					<div className="flex justify-between">
 						<span className="text-xl">Saved Stocks</span>
@@ -183,7 +174,7 @@ export default function Dashboard({
 											: "")
 									}
 									onClick={() =>
-										handleClickSaved(savedStocks[index])
+										setStockInView(savedStocks[index])
 									}
 								>
 									<img

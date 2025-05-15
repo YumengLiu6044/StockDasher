@@ -13,33 +13,51 @@ import {
 	getInfoFromRecommendation,
 	getTopEarners,
 } from "./utils/fetch";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast } from "react-toastify";
+import { useIsLoadingCompanyStore, useSavedStocksStore, useStockInViewStore, useTrendingStockArrayStore } from "./utils/store";
 
 function App() {
 	const divRef = useRef<HTMLDivElement | null>(null);
 	const [showSideBar, setShowSideBar] = useState(true);
-	const [isLoadingCompanyInfo, setIsLoadingCompanyInfo] = useState(false);
-	const [savedStocks, setSavedStocks] = useState<SavedCompanyInfo[]>([]);
-	const [trendingStocks, setTrendingStocks] = useState<TrendingStock[]>([]);
-	const [stockInView, setStockInView] = useState<SavedCompanyInfo | null>(
-		null
+	
+	const isLoadingCompanyInfo = useIsLoadingCompanyStore((state) => state.isLoading)
+	const setIsLoadingCompanyInfo = useIsLoadingCompanyStore((state) => state.setIsLoading)
+
+	const savedStocks = useSavedStocksStore((state) => state.companies);
+	const appendSavedStocks = useSavedStocksStore(
+		(state) => state.appendCompany
 	);
 
-	const notifyFailedSave = () => toast.error("Failed to add to saved stocks", {hideProgressBar: true, autoClose: 1000})
-	const notifySuccessfulSave = () => toast.success("Added to saved company", {hideProgressBar: true, autoClose: 1000})
-	const notifyFailedToGetTrending = () => toast.error("Failed to get trending stocks", {hideProgressBar: true, autoClose: 1000})
+	const setTrendingStocks = useTrendingStockArrayStore((state) => state.setStocks)
+	
+	const setStockInView = useStockInViewStore((state) => state.setCompany)
+
+	const notifyFailedSave = () =>
+		toast.error("Failed to add to saved stocks", {
+			hideProgressBar: true,
+			autoClose: 1000,
+		});
+	const notifySuccessfulSave = () =>
+		toast.success("Added to saved company", {
+			hideProgressBar: true,
+			autoClose: 1000,
+		});
+	const notifyFailedToGetTrending = () =>
+		toast.error("Failed to get trending stocks", {
+			hideProgressBar: true,
+			autoClose: 1000,
+		});
 
 	const handleNewSavedCompany = (data: SavedCompanyInfo | null) => {
 		if (data) {
 			setStockInView(data);
-			setSavedStocks([...savedStocks, data]);
-			notifySuccessfulSave()
+			appendSavedStocks(data);
+			notifySuccessfulSave();
+		} else {
+			notifyFailedSave();
 		}
-		else {
-			notifyFailedSave()
-		}
-		setIsLoadingCompanyInfo(false)
-	}
+		setIsLoadingCompanyInfo(false);
+	};
 
 	const handleClickSearchResult = (clickedResult: StockSearchResult) => {
 		if (
@@ -74,7 +92,7 @@ function App() {
 				setTrendingStocks(stocks ?? []);
 
 				if (!stocks) {
-					notifyFailedToGetTrending()
+					notifyFailedToGetTrending();
 				}
 			});
 		}
@@ -92,14 +110,7 @@ function App() {
 					}}
 				></Topbar>
 				<Dashboard
-					trendingStocks={trendingStocks}
 					handleClickTrendingStock={handleClickTrendingStock}
-					isLoadingCompanyInfo={isLoadingCompanyInfo}
-					setIsLoadingCompanyInfo={setIsLoadingCompanyInfo}
-					stockInView={stockInView}
-					setStockInView={setStockInView}
-					savedStocks={savedStocks}
-					setSavedStocks={setSavedStocks}
 				></Dashboard>
 			</div>
 		</div>

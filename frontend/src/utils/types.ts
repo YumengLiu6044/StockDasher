@@ -23,6 +23,17 @@ export type SavedCompanyInfo = {
 	change_percent: number;
 };
 
+export type SavedCompanyInfoStore = {
+	company: SavedCompanyInfo | null
+	setCompany: (newCompany: SavedCompanyInfo) => void
+}
+
+export type SavedCompanyInfoArrayStore = {
+	companies: SavedCompanyInfo[];
+	setCompanies: (newCompanies: SavedCompanyInfo[]) => void;
+	appendCompany: (newCompany: SavedCompanyInfo) => void;
+};
+
 export type GetPriceRequest = {
 	symbol: string;
 	timeframe: string;
@@ -44,3 +55,13 @@ export type TrendingStock = {
 	ticker: string;
 	volume: number;
 };
+
+export type TrendingStockArrayStore = {
+	stocks: TrendingStock[];
+	setStocks: (newStocks: TrendingStock[]) => void;
+};
+
+export type IsLoadingCompanyStore = {
+	isLoading: boolean
+	setIsLoading: (newState: boolean) => void
+}
