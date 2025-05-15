@@ -188,7 +188,7 @@ async def getTopEarners():
 
     cached_result = result.json()
 
-    return result.json()
+    return cached_result
 
 
 if __name__ == "__main__":

@@ -1,22 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import TrendingStockCard, { LOGO_KEY } from "./trendingStockCard";
 import StockPriceView from "./stockPriceView";
-import { TrendingStock } from "../utils/types";
 import loading from "../assets/loading.svg";
 import {
 	useSavedStocksStore,
 	useTrendingStockArrayStore,
 } from "../utils/store";
-
-interface DashboardProps {
-	handleClickTrendingStock: (trendingStock: TrendingStock) => void;
-}
+import { handleClickTrendingStock } from "../utils/handler";
 
 const dropDownOptions = ["None", "Name", "Price", "Change"];
 
-export default function Dashboard({
-	handleClickTrendingStock,
-}: DashboardProps) {
+export default function Dashboard() {
 	const divRef = useRef<HTMLDivElement | null>(null);
 	const [sortOptionIndex, setSortOptionIndex] = useState(0);
 	const [isSortIncrease, setIsSortIncrease] = useState(false);

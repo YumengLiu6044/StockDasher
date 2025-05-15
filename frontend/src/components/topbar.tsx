@@ -3,10 +3,10 @@ import headshot from "../assets/yumeng.jpeg";
 import loading from "../assets/loading.svg";
 import { searchStock } from "../utils/fetch";
 import { StockSearchResult } from "../utils/types";
+import { handleClickSearchResult } from "../utils/handler";
 
 interface TopBarProp {
 	handleMenuButtonClick: () => void;
-	handleClickSearchResult: (clickedResult: StockSearchResult) => void;
 }
 
 export default function Topbar(prop: TopBarProp) {
@@ -99,7 +99,7 @@ export default function Topbar(prop: TopBarProp) {
 									<div
 										className="flex gap-2 items-center justify-between px-2 py-0.5 hover:bg-gray-300 transition-all"
 										onClick={() =>
-											prop.handleClickSearchResult(
+											handleClickSearchResult(
 												searchResults[index]
 											)
 										}
