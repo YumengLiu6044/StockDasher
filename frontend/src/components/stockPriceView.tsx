@@ -10,9 +10,9 @@ import {
 	CandlestickSeries,
 	CandlestickData,
 } from "lightweight-charts";
-import { LOGO_KEY } from "./trendingStockCard";
 import { getPrice } from "../utils/fetch";
 import { useSavedStocksStore } from "../utils/store";
+import { LOGO_KEY } from "../utils/fetch";
 
 
 const Timeframes = [

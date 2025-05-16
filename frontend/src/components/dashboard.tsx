@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import TrendingStockCard, { LOGO_KEY } from "./trendingStockCard";
+import TrendingStockCard from "./trendingStockCard";
 import StockPriceView from "./stockPriceView";
 import loading from "../assets/loading.svg";
 import {
@@ -7,6 +7,7 @@ import {
 	useTrendingStockArrayStore,
 } from "../utils/store";
 import { handleClickTrendingStock } from "../utils/handler";
+import { LOGO_KEY } from "../utils/fetch";
 
 const dropDownOptions = ["None", "Name", "Price", "Change"];
 

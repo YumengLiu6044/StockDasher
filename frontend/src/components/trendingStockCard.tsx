@@ -1,10 +1,11 @@
 import { TrendingStock } from "../utils/types";
+import { LOGO_KEY } from "../utils/fetch";
 
 interface TrendingStockCardProp {
 	data: TrendingStock;
 }
 
-export const LOGO_KEY = import.meta.env.VITE_LOGO_KEY;
+
 
 function increaseLabel(percentIncrease: string) {
 	return (
