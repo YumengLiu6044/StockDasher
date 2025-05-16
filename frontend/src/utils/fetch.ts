@@ -7,7 +7,8 @@ import {
 	TrendingStock,
 } from "./types";
 
-const BACKEND_URL = "http://0.0.0.0:10000";
+const BACKEND_URL = "https://stockdasher.onrender.com";
+
 export const LOGO_KEY = import.meta.env.VITE_LOGO_KEY;
 
 export async function searchStock(query: string): Promise<StockSearchResult[]> {
